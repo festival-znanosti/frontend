@@ -128,7 +128,6 @@ module.exports = {
     indent: 'off',
     'jsdoc/check-alignment': 'warn',
     'jsdoc/check-indentation': 'off',
-    'jsdoc/newline-after-description': 'warn',
     'jsx-quotes': ['warn', 'prefer-double'],
     'linebreak-style': 'off',
     'max-len': [

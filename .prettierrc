@@ -7,6 +7,7 @@
   "singleQuote": true,
   "trailingComma": "es5",
   "jsxBracketSameLine": false,
+  "jsxSingleQuote": false,
   "semi": false,
   "endOfLine": "lf"
 }

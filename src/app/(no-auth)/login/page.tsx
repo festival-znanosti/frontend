@@ -70,7 +70,7 @@ export default function Login() {
                   <FormItem>
                     <FormLabel htmlFor="email">Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="ja@festival-znanosti.hr" {...field} />
+                      <Input id="email" placeholder="ja@festival-znanosti.hr" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -84,7 +84,7 @@ export default function Login() {
                   <FormItem>
                     <FormLabel htmlFor="password">Lozinka</FormLabel>
                     <FormControl>
-                      <Input placeholder="FestivalZnanostiJeZakon123" type="password" {...field} />
+                      <Input id="password" placeholder="FestivalZnanostiJeZakon123" type="password" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

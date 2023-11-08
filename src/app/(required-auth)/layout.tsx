@@ -7,5 +7,5 @@ export default async function RequireAuthLayout({ children }: { children: React.
   //   redirect('/login')
   // }
 
-  return { children }
+  return <>{children}</>
 }

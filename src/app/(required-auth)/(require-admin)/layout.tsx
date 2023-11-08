@@ -7,5 +7,5 @@ export default async function AdminAuthLayout({ children }: { children: React.Re
   //   notFound()
   // }
 
-  return { children }
+  return <>{children}</>
 }

@@ -7,5 +7,5 @@ export default async function NoAuthLayout({ children }: { children: React.React
   //   redirect('/')
   // }
 
-  return { children }
+  return <>{children}</>
 }

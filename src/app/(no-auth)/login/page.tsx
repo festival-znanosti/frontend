@@ -37,7 +37,7 @@ export default function Login() {
         },
         body: JSON.stringify({
           ...data,
-          provider: 'credentials',
+          // provider: 'credentials',
         }),
       })
 

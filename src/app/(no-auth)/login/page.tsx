@@ -1,15 +1,20 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation } from '@tanstack/react-query'
 import Link from 'next/link'
-import { useState } from 'react'
+import router from 'next/router'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
 
+import { useSetAuthState } from '@/components/providers/all/auth/AuthProvider.client'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { toast } from '@/components/ui/use-toast'
+import { fetchApi } from '@/lib/api'
+import { AUTH_TOKEN_COOKIE_NAME } from '@/lib/api/auth.common'
+import { AuthUser } from '@/lib/api/types'
 
 const LoginSchema = z.object({
   email: z.string().min(1, {
@@ -21,6 +26,48 @@ const LoginSchema = z.object({
 })
 
 export default function Login() {
+  const setAuthState = useSetAuthState()
+
+  const loginMutation = useMutation({
+    mutationFn: async (data: z.infer<typeof LoginSchema>) => {
+      const response = await fetchApi<{ user: AuthUser; token: string }>('/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...data,
+          provider: 'credentials',
+        }),
+      })
+
+      return response
+    },
+
+    // @ts-ignore
+    onSuccess(response) {
+      if (response?.status === 'success') {
+        setAuthState(response.data.user)
+        document.cookie = `${AUTH_TOKEN_COOKIE_NAME}=${response.data.token}; path=/; max-age=${60 * 60 * 24 * 7}`
+
+        toast({
+          title: 'Login success!',
+          description: "You're now logged in!",
+        })
+
+        router.push('/')
+      }
+    },
+  })
+
+  const isLoading = loginMutation.isPending
+
+  function onSubmit(data: z.infer<typeof LoginSchema>) {
+    loginMutation.mutate({
+      email: data.email,
+      password: data.password,
+    })
+  }
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
@@ -28,23 +75,6 @@ export default function Login() {
       password: '',
     },
   })
-
-  const [isLoading, setIsLoading] = useState(false)
-
-  function onSubmit(data: z.infer<typeof LoginSchema>) {
-    setIsLoading(true)
-    setTimeout(() => {
-      toast({
-        title: 'You submitted the following values:',
-        description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-          </pre>
-        ),
-      })
-      setIsLoading(false)
-    }, 2000)
-  }
 
   return (
     <div className="w-full h-full flex justify-between ">

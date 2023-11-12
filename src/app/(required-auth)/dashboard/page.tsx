@@ -1,86 +1,34 @@
 'use client'
 
-import { zodResolver } from '@hookform/resolvers/zod'
-import { DropdownMenuContent } from '@radix-ui/react-dropdown-menu'
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import * as z from 'zod'
-
-import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
-import { DropdownMenu, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { toast } from '@/components/ui/use-toast'
-
-const EVENT_TYPES = [
-  'Predavanje - kino dvorana',
-  'Prezentacija - izložbena dvorana',
-  'Radionica - izložbena dvorana',
-  'Prezentacija - dvorište',
-  ' Radionica - dvorište',
-] as const
-
-const AGE_OF_PARTICIPANTS = [
-  {
-    id: 'S0',
-    label: 'S0 - predškolski uzrast i niži razredi osnovne škole',
-  },
-  {
-    id: 'S1',
-    label: 'S1 - 5. i 6. razred osnovne škole',
-  },
-  {
-    id: 'S2',
-    label: 'S2 - 7. i 8. razred osnovne škole, 1. razred srednje škole',
-  },
-  {
-    id: 'S3',
-    label: 'S3 - 2., 3. i 4. razred srednje škole',
-  },
-  {
-    id: 'PP',
-    label: 'PP - djeca s posebnim potrebama',
-  },
-] as const
-
-const EventFormSchema = z.object({
-  email: z.string().min(1, {
-    message: 'Email is required',
-  }),
-  password: z.string().min(1, {
-    message: 'Password is required',
-  }),
-})
-
 export default function RegularDashboard() {
-  const form = useForm<z.infer<typeof EventFormSchema>>({
-    resolver: zodResolver(EventFormSchema),
-    defaultValues: {
-      email: '',
-      password: '',
-    },
-  })
+  // const form = useForm<z.infer<typeof EventFormSchema>>({
+  //   resolver: zodResolver(EventFormSchema),
+  //   defaultValues: {
+  //     email: '',
+  //     password: '',
+  //   },
+  // })
 
-  const [isLoading, setIsLoading] = useState(false)
+  // const [isLoading, setIsLoading] = useState(false)
 
-  function onSubmit(data: z.infer<typeof EventFormSchema>) {
-    setIsLoading(true)
-    setTimeout(() => {
-      toast({
-        title: 'You submitted the following values:',
-        description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-          </pre>
-        ),
-      })
-      setIsLoading(false)
-    }, 2000)
-  }
+  // function onSubmit(data: z.infer<typeof EventFormSchema>) {
+  //   setIsLoading(true)
+  //   setTimeout(() => {
+  //     toast({
+  //       title: 'You submitted the following values:',
+  //       description: (
+  //         <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+  //           <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+  //         </pre>
+  //       ),
+  //     })
+  //     setIsLoading(false)
+  //   }, 2000)
+  // }
   return (
     <main>
-      <Form {...form}>
+      Dashbard
+      {/* <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="space-y-2 text-left">
             <h1 className="text-3xl font-bold">Obrazac za prijavu</h1>
@@ -178,7 +126,7 @@ export default function RegularDashboard() {
             )}
           />
         </form>
-      </Form>
+      </Form> */}
     </main>
   )
 }

@@ -3,34 +3,29 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
 
+import { login } from '@/api/repository'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-// import { toast } from '@/components/ui/use-toast'
+import { toast } from '@/components/ui/use-toast'
 
 const LoginSchema = z.object({
   email: z.string().min(1, {
-    message: 'Email is required',
+    message: 'Email je obavezan',
   }),
   password: z.string().min(1, {
-    message: 'Password is required',
+    message: 'Lozinka je obavezna',
   }),
 })
 
+type LoginFormData = z.infer<typeof LoginSchema>
+
 export default function Login() {
-  const loginMutation = useMutation({})
-
-  const isLoading = loginMutation.isPending
-
-  // function onSubmit(data: z.infer<typeof LoginSchema>) {
-  //   loginMutation.mutate({
-  //     email: data.email,
-  //     password: data.password,
-  //   })
-  // }
+  const router = useRouter()
 
   const loginForm = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
@@ -40,8 +35,37 @@ export default function Login() {
     },
   })
 
-  const onSubmit = async (data: z.infer<typeof LoginSchema>) => {
-    console.log('aaa', data)
+  const loginMutation = useMutation({
+    mutationFn: async (data: LoginFormData) => {
+      const response = await login(data)
+      return response
+    },
+
+    onSuccess(response) {
+      if (response?.status === 'success') {
+        toast({
+          title: 'Uspjesno ste se ulogirali!',
+          description: response.message,
+        })
+        router.push('/dashboard')
+      }
+    },
+
+    onError(error) {
+      if (error?.message) {
+        toast({
+          title: 'Greška',
+          description: error.message,
+          variant: 'destructive',
+        })
+      }
+    },
+  })
+
+  const isLoading = loginMutation.isPending
+
+  const onSubmit = async (data: LoginFormData) => {
+    loginMutation.mutate(data)
   }
 
   return (

@@ -1,11 +1,13 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation } from '@tanstack/react-query'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
 
+import { register } from '@/api/repository'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
@@ -13,7 +15,7 @@ import { toast } from '@/components/ui/use-toast'
 
 const RegisterSchema = z
   .object({
-    name: z.string().min(1, {
+    firstName: z.string().min(1, {
       message: '*',
     }),
     lastName: z.string().min(1, {
@@ -31,16 +33,20 @@ const RegisterSchema = z
     }),
     confirmPassword: z.string(),
   })
-  .refine(data => data.password === data.confirmPassword, {
+  .refine((data) => data.password === data.confirmPassword, {
     message: 'Lozinke se ne podudaraju.',
     path: ['confirmPassword'],
   })
 
+type RegisterFormData = z.infer<typeof RegisterSchema>
+
 export default function Register() {
-  const form = useForm<z.infer<typeof RegisterSchema>>({
+  const router = useRouter()
+
+  const registerForm = useForm<RegisterFormData>({
     resolver: zodResolver(RegisterSchema),
     defaultValues: {
-      name: '',
+      firstName: '',
       lastName: '',
       email: '',
       password: '',
@@ -48,22 +54,37 @@ export default function Register() {
     },
   })
 
-  const [isLoading, setIsLoading] = useState(false)
+  const registerMutation = useMutation({
+    mutationFn: async (data: RegisterFormData) => {
+      const response = await register(data)
+      return response
+    },
 
-  function onSubmit(data: z.infer<typeof RegisterSchema>) {
-    setIsLoading(true)
-    setTimeout(() => {
-      toast({
-        title: 'You submitted the following values:',
-        description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-          </pre>
-        ),
-        variant: 'default',
-      })
-      setIsLoading(false)
-    }, 2000)
+    onSuccess(response) {
+      if (response?.status === 'success') {
+        toast({
+          title: 'Uspjesno ste se registriali!',
+          description: response.message,
+        })
+        router.push('/login')
+      }
+    },
+
+    onError(error) {
+      if (error?.message) {
+        toast({
+          title: 'Greška',
+          description: error.message,
+          variant: 'destructive',
+        })
+      }
+    },
+  })
+
+  const isLoading = registerMutation.isPending
+
+  async function onSubmit(formData: RegisterFormData) {
+    registerMutation.mutate(formData)
   }
 
   return (
@@ -71,26 +92,26 @@ export default function Register() {
       <div className="w-full max-w-md p-8 space-y-4  rounded-xl shadow-md bg-white dark:bg-gray-800">
         <h2 className="text-2xl font-bold text-center">Pridružite se</h2>
         <p className="text-center text-gray-600 dark:text-gray-400">Kreirajte svoj korisnički račun</p>
-        <Form {...form}>
-          <form className="space-y-2" onSubmit={form.handleSubmit(onSubmit)}>
+        <Form {...registerForm}>
+          <form className="space-y-2" onSubmit={registerForm.handleSubmit(onSubmit)}>
             <FormField
-              control={form.control}
-              name="name"
+              control={registerForm.control}
+              name="firstName"
               render={({ field }) => (
                 <FormItem>
                   <div className="flex">
-                    <FormLabel htmlFor="name">Ime</FormLabel>
+                    <FormLabel htmlFor="firstName">Ime</FormLabel>
                     <FormMessage className="text-sm font-medium leading-none" />
                   </div>
                   <FormControl>
-                    <Input id="name" placeholder="Ivan" {...field} />
+                    <Input id="firstName" placeholder="Ivan" {...field} />
                   </FormControl>
                 </FormItem>
               )}
             />
 
             <FormField
-              control={form.control}
+              control={registerForm.control}
               name="lastName"
               render={({ field }) => (
                 <FormItem>
@@ -106,7 +127,7 @@ export default function Register() {
             />
 
             <FormField
-              control={form.control}
+              control={registerForm.control}
               name="email"
               render={({ field }) => (
                 <FormItem>
@@ -120,7 +141,7 @@ export default function Register() {
             />
 
             <FormField
-              control={form.control}
+              control={registerForm.control}
               name="password"
               render={({ field }) => (
                 <FormItem>
@@ -134,7 +155,7 @@ export default function Register() {
             />
 
             <FormField
-              control={form.control}
+              control={registerForm.control}
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>

@@ -3,18 +3,13 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import Link from 'next/link'
-import router from 'next/router'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
 
-import { useSetAuthState } from '@/components/providers/all/auth/AuthProvider.client'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { toast } from '@/components/ui/use-toast'
-import { fetchApi } from '@/lib/api'
-import { AUTH_TOKEN_COOKIE_NAME } from '@/lib/api/auth.common'
-import { AuthUser } from '@/lib/api/types'
+// import { toast } from '@/components/ui/use-toast'
 
 const LoginSchema = z.object({
   email: z.string().min(1, {
@@ -26,55 +21,28 @@ const LoginSchema = z.object({
 })
 
 export default function Login() {
-  const setAuthState = useSetAuthState()
-
-  const loginMutation = useMutation({
-    mutationFn: async (data: z.infer<typeof LoginSchema>) => {
-      const response = await fetchApi<{ user: AuthUser; token: string }>('/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...data,
-          // provider: 'credentials',
-        }),
-      })
-
-      return response
-    },
-
-    // @ts-ignore
-    onSuccess(response) {
-      if (response?.status === 'success') {
-        setAuthState(response.data.user)
-        document.cookie = `${AUTH_TOKEN_COOKIE_NAME}=${response.data.token}; path=/; max-age=${60 * 60 * 24 * 7}`
-
-        toast({
-          title: 'Login success!',
-          description: "You're now logged in!",
-        })
-
-        router.push('/')
-      }
-    },
-  })
+  const loginMutation = useMutation({})
 
   const isLoading = loginMutation.isPending
 
-  function onSubmit(data: z.infer<typeof LoginSchema>) {
-    loginMutation.mutate({
-      email: data.email,
-      password: data.password,
-    })
-  }
-  const form = useForm<z.infer<typeof LoginSchema>>({
+  // function onSubmit(data: z.infer<typeof LoginSchema>) {
+  //   loginMutation.mutate({
+  //     email: data.email,
+  //     password: data.password,
+  //   })
+  // }
+
+  const loginForm = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
       email: '',
       password: '',
     },
   })
+
+  const onSubmit = async (data: z.infer<typeof LoginSchema>) => {
+    console.log('aaa', data)
+  }
 
   return (
     <div className="w-full h-full flex justify-between ">
@@ -85,8 +53,8 @@ export default function Login() {
         </Link>
       </div>
       <main className="flex w-full lg:w-[45%] xl:w-[50%] px-4 lg:px-0 h-full items-center justify-center py-12 bg-white dark:bg-gray-800">
-        <Form {...form}>
-          <form className="mx-auto w-[350px]" onSubmit={form.handleSubmit(onSubmit)}>
+        <Form {...loginForm}>
+          <form className="mx-auto w-[350px]" onSubmit={loginForm.handleSubmit(onSubmit)}>
             <div className="space-y-2 text-left">
               <h1 className="text-3xl font-bold">Prijava</h1>
               <p className="text-zinc-500 dark:text-zinc-400">Unesite svoje korisničke podatke</p>
@@ -94,7 +62,7 @@ export default function Login() {
             </div>
             <div className="space-y-4">
               <FormField
-                control={form.control}
+                control={loginForm.control}
                 name="email"
                 render={({ field }) => (
                   <FormItem>
@@ -108,7 +76,7 @@ export default function Login() {
               />
 
               <FormField
-                control={form.control}
+                control={loginForm.control}
                 name="password"
                 render={({ field }) => (
                   <FormItem>

@@ -4,9 +4,8 @@ import { fetchSelf } from './auth'
 import { AUTH_TOKEN_COOKIE_NAME } from './auth.common'
 
 export const getAuthToken = () => {
-  const cookieJar = cookies()
-
-  return cookieJar.get(AUTH_TOKEN_COOKIE_NAME)?.value ?? null
+  const myCookie = cookies().get(AUTH_TOKEN_COOKIE_NAME)?.value
+  return myCookie ?? null
 }
 
 export const fetchSelfServer = async () => {

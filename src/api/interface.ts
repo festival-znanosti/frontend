@@ -19,3 +19,11 @@ export interface LoginResponse {
   message: string
   token: string
 }
+
+export type SelfResponse = {
+  id: number
+  firstName: string
+  lastName: string
+  email: string
+  role: number
+}

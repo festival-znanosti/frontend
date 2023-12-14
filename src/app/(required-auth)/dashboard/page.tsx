@@ -60,8 +60,7 @@ export default function RegularDashboard() {
     }, 2000)
   }
   return (
-    <main>
-      Dashbard
+    <main className="p-6 md:p-10 h-full w-auto">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="space-y-2 text-left">
@@ -106,7 +105,7 @@ export default function RegularDashboard() {
                     <DropdownMenuTrigger asChild>
                       <Button variant="outline">Odaberite:</Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-56 border rounded-md">
+                    <DropdownMenuContent className="w-56 border rounded-md ml-28">
                       <DropdownMenuGroup>
                         {EVENT_TYPES.map((type, index) => (
                           <DropdownMenuItem key={index}>

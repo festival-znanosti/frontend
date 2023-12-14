@@ -6,6 +6,7 @@ import { ReactNode, useState } from 'react'
 import SidebarSection from './SidebarSection'
 
 import Logo from '@/components/random/Logo'
+import { ThemeToggle } from '@/components/ui/ThemeToggler'
 interface SidebarSectionProps {
   sectionLabel?: string
   pageLabels: string[]
@@ -37,16 +38,16 @@ const Sidebar = () => {
   const [currentPage, setCurrentPage] = useState('Moji obrazci')
 
   return (
-    <aside className="h-screen w-[320px] relative top-0 left-0 flex flex-col border-r-[1px] bg-zinc-200 dark:bg-gray-800">
-      <div className="px-6 py-10">
+    <aside className="h-full w-[320px] relative top-0 left-0 flex flex-col border-r-[1px] bg-zinc-200 dark:bg-gray-800">
+      <div className="px-10 py-10">
         <a href="/">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center">
             <Logo size="100" />
-            <p className="text-4xl font-bold text-zinc-900 dark:text-zinc-100">Zagreb</p>
+            <p className="text-4xl ml-auto font-bold text-zinc-900 dark:text-zinc-100">Zagreb</p>
           </div>
         </a>
       </div>
-      <div className="flex flex-col gap-5 px-3 py-10 ">
+      <div className="flex flex-col gap-5 px-3 py-10 flex-1">
         {SidebarItemsAdmin.map((section, index) => (
           <SidebarSection
             key={index}
@@ -58,6 +59,9 @@ const Sidebar = () => {
             setCurrentPage={setCurrentPage}
           />
         ))}
+      </div>
+      <div className="mb-8 px-5">
+        <ThemeToggle />
       </div>
     </aside>
   )

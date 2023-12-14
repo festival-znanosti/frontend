@@ -8,6 +8,7 @@ import { useForm } from 'react-hook-form'
 import * as z from 'zod'
 
 import { login } from '@/api/repository'
+import Logo from '@/components/random/Logo'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
@@ -72,8 +73,7 @@ export default function Login() {
     <div className="w-full h-full flex justify-between ">
       <div className="hidden h-full lg:w-[55%] xl:w-[50%] lg:flex items-center justify-center bg-zinc-100  dark:bg-zinc-900 relative">
         <Link href="/">
-          <div> Moram smislit neki lijepi logo ili stavit onaj crveni koji postoji</div>
-          <div>Pitaj Branimira</div>
+          <Logo size="300" />
         </Link>
       </div>
       <main className="flex w-full lg:w-[45%] xl:w-[50%] px-4 lg:px-0 h-full items-center justify-center py-12 bg-white dark:bg-gray-800">

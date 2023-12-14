@@ -43,7 +43,7 @@ export default function RegularDashboard() {
     },
   })
 
-  const [isLoading, setIsLoading] = useState(false)
+  const [_isLoading, setIsLoading] = useState(false)
 
   function onSubmit(data: z.infer<typeof EventFormSchema>) {
     setIsLoading(true)
@@ -88,7 +88,7 @@ export default function RegularDashboard() {
           <FormField
             control={form.control}
             name="type"
-            render={({ field }) => (
+            render={() => (
               <FormItem>
                 <FormLabel htmlFor="type">Vrsta događanja</FormLabel>
                 <FormDescription>

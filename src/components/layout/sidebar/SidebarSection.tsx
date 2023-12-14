@@ -30,7 +30,7 @@ const SidebarSection = ({
 
   return (
     <div className="flex flex-col">
-      {sectionLabel && <div className="p-2 text-neutral-strong title-3">{sectionLabel}</div>}
+      {sectionLabel && <div className="p-2 font-bold text-[15px]">{sectionLabel}</div>}
       {pageLabels &&
         pageLabels.map((label, i) => {
           return (
@@ -38,18 +38,16 @@ const SidebarSection = ({
               <button
                 className={cn(
                   'p-2 py-3 duration-100',
-                  currentPage === pageLabels[i] ? 'rounded-lg bg-neutral-weak' : 'hover:scale-[1.02]'
+                  currentPage === pageLabels[i] ? 'rounded-lg bg-background' : 'hover:scale-[1.02]'
                 )}
                 onClick={() => {
                   handleNavigation(pageRoutes[i], pageLabels[i])
-                  // setDrawerIsOpen(false)
                 }}
                 disabled={currentPage === pageLabels[i]}
               >
                 <div className="flex flex-row gap-2 items-center">
                   {pageIcons[i] === 'none' ? null : <>{pageIcons[i]}</>}
-                  {/* <Icon icon={pageIcons[i]} className="bg-neutral" size={20} /> */}
-                  <p className="button-large text-neutral">{label}</p>
+                  <p className=" font-bold text-lg">{label}</p>
                 </div>
               </button>
             </Fragment>

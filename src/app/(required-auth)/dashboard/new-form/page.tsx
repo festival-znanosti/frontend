@@ -1,9 +1,7 @@
 'use client'
 
-import { isNumber } from 'util'
-
 import { zodResolver } from '@hookform/resolvers/zod'
-import { SelectContent, SelectItemText, SelectViewport } from '@radix-ui/react-select'
+import { SelectContent, SelectViewport } from '@radix-ui/react-select'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 

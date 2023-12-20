@@ -1,7 +1,9 @@
 'use client'
 
+import { isNumber } from 'util'
+
 import { zodResolver } from '@hookform/resolvers/zod'
-import { SelectContent, SelectViewport } from '@radix-ui/react-select'
+import { SelectContent, SelectItemText, SelectViewport } from '@radix-ui/react-select'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -28,13 +30,18 @@ const AGE_OF_PARTICIPANTS = [
   { id: '5', label: 'PP - djeca s posebnim potrebama' },
 ] as const
 
-const EventFormSchema = z.object({
-  title: z.string().min(1, 'Naziv događanja je obavezan'),
-  type: z.string().min(1, 'Vrsta događanja je obavezna'),
-  age: z.array(z.string()).refine((value) => value.some((item) => item), {
-    message: 'Odaberite barem jedan uzrast',
-  }),
-})
+const EventFormSchema = z
+  .object({
+    title: z.string().min(1, 'Naziv događanja je obavezan'),
+    type: z.string().min(1, 'Vrsta događanja je obavezna'),
+    participantsAges: z.array(z.string()).refine((value) => value.some((item) => item), {
+      message: 'Odaberite barem jedan uzrast',
+    }),
+    visitorsCount: z.coerce.number().positive('Broj posjetitelja mora biti veći od 0'),
+  })
+  .refine((data) => !isNaN(data.visitorsCount), {
+    message: 'Broj posjetitelja mora biti broj',
+  })
 
 export default function NewForm() {
   const form = useForm<z.infer<typeof EventFormSchema>>({
@@ -42,7 +49,8 @@ export default function NewForm() {
     defaultValues: {
       title: '',
       type: '',
-      age: [],
+      participantsAges: [],
+      visitorsCount: undefined,
     },
   })
 
@@ -71,8 +79,12 @@ export default function NewForm() {
             name="title"
             render={({ field }) => (
               <FormItem>
-                <FormLabel htmlFor="title">Naziv događanja</FormLabel>
-                <FormDescription>Upišite naziv / naslov radionice / predavanja / prezentacije</FormDescription>
+                <div className="mb-4">
+                  <FormLabel className="text-base" htmlFor="title">
+                    Naziv događanja
+                  </FormLabel>
+                  <FormDescription>Upišite naziv / naslov radionice / predavanja / prezentacije</FormDescription>
+                </div>
                 <FormControl>
                   <Input id="title" placeholder="Kako napraviti jako dobru aplikaciju" {...field} />
                 </FormControl>
@@ -86,29 +98,33 @@ export default function NewForm() {
             name="type"
             render={({ field }) => (
               <FormItem className="mt-6">
-                <FormLabel htmlFor="type">Vrsta događanja</FormLabel>
-                <FormDescription>
-                  Izborom predavanja odabirete ex-catedra predavanje u kino dvorani kapaciteta do 80 osoba, ukupan broj
-                  predavanja u toj dvorani manji je od ukupnog broja radionica i prezentacija u izložbenoj dvorani, pa
-                  moguće da su svi termini već popunjeni, u tom slučaju molimo da prilagodite predavanje načinu
-                  izlaganja poput prezentacije u izložbenoj dvorani u kojoj se istovremeno održava više prezentacija /
-                  radionica. Radionice i prezentacije se održavaju u izložbenoj dvorani na stolu s projektorom ili
-                  televizorom. Radionicu i prezentaciju moguće je po potrebi i posjećenosti provesti više puta u
-                  odabranom terminu. Za lokaciju radionice ili prezentacije možete izabrati i dvorište, ali tada ovisite
-                  o vremenskim prilikama, u dvorištu možemo osigurati izvor struje i televizor.)
-                </FormDescription>
+                <div className="mb-4">
+                  <FormLabel className="text-base" htmlFor="type">
+                    Vrsta događanja
+                  </FormLabel>
+                  <FormDescription>
+                    Izborom predavanja odabirete ex-catedra predavanje u kino dvorani kapaciteta do 80 osoba, ukupan
+                    broj predavanja u toj dvorani manji je od ukupnog broja radionica i prezentacija u izložbenoj
+                    dvorani, pa moguće da su svi termini već popunjeni, u tom slučaju molimo da prilagodite predavanje
+                    načinu izlaganja poput prezentacije u izložbenoj dvorani u kojoj se istovremeno održava više
+                    prezentacija / radionica. Radionice i prezentacije se održavaju u izložbenoj dvorani na stolu s
+                    projektorom ili televizorom. Radionicu i prezentaciju moguće je po potrebi i posjećenosti provesti
+                    više puta u odabranom terminu. Za lokaciju radionice ili prezentacije možete izabrati i dvorište,
+                    ali tada ovisite o vremenskim prilikama, u dvorištu možemo osigurati izvor struje i televizor.)
+                  </FormDescription>
+                </div>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
                     <div className="flex gap-4 items-center">
                       <div className="w-[400px]">
                         <SelectTrigger className="w-[400px]">
-                          <SelectValue placeholder="Odaberite" />
+                          <SelectValue placeholder="Odaberite" onChange={(val) => val} />
                         </SelectTrigger>
                       </div>
                       <p>{form.getValues('type')}</p>
                     </div>
                   </FormControl>
-                  <SelectContent className="SelectContent">
+                  <SelectContent>
                     <SelectViewport className="bg-background border rounded-md">
                       {EVENT_TYPES.map((type, index) => (
                         <SelectItem value={type} key={index}>
@@ -125,7 +141,7 @@ export default function NewForm() {
 
           <FormField
             control={form.control}
-            name="age"
+            name="participantsAges"
             render={() => (
               <FormItem className="mt-6">
                 <div className="mb-4">
@@ -136,7 +152,7 @@ export default function NewForm() {
                   <FormField
                     key={age.id}
                     control={form.control}
-                    name="age"
+                    name="participantsAges"
                     render={({ field }) => {
                       return (
                         <FormItem key={age.id} className="flex flex-row items-start space-x-3 space-y-0">
@@ -160,6 +176,49 @@ export default function NewForm() {
               </FormItem>
             )}
           />
+
+          <FormField
+            control={form.control}
+            name="visitorsCount"
+            render={({ field }) => (
+              <FormItem className="mt-6">
+                <div className="mb-4">
+                  <FormLabel className="text-base" htmlFor="visitorsCount">
+                    Predviđeni broj posjetitelja:
+                  </FormLabel>
+                  <FormDescription>
+                    Navesti koliki broj posjetitelja može sudjelovati predavanju / prezentaciji / radionici
+                  </FormDescription>
+                </div>
+                <FormControl>
+                  <Input id="visitorsCount" placeholder="30" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* <FormField
+            control={form.control}
+            name="director"
+            render={({ field }) => (
+              <FormItem className="mt-6">
+                <div className="mb-4">
+                  <FormLabel className="text-base" htmlFor="director">
+                    Voditelj događanja
+                  </FormLabel>
+                  <FormDescription>
+                    Navesti ime i kontakt jedne osobe koja je voditelj predavanja / radionice / prezentacije.
+                  </FormDescription>
+                </div>
+                <FormControl>
+                  <Input id="director" placeholder="ime i prezime, kontakt telefon i e mail adresa" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          /> */}
+
           <Button type="submit" className="mt-6">
             Submit
           </Button>

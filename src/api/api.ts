@@ -75,7 +75,7 @@ async function sendRequest<TData>(
     method,
     ...fetchOptions,
     body: body ? JSON.stringify(body) : undefined,
-    credentials: 'include',
+    // credentials: 'include',
     headers: {
       ...JSON_HEADER,
       ...headers,
@@ -105,7 +105,7 @@ async function sendRequestNoBody<TData>(
   const res = await fetch(url, {
     method,
     ...fetchOptions,
-    credentials: 'include',
+    // credentials: 'include',
     headers: {
       ...JSON_HEADER,
       ...headers,

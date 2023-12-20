@@ -12,9 +12,9 @@ export default async function RequireAuthLayout({ children }: { children: React.
   // }
 
   return (
-    <div className="flex w-full h-full absolute">
+    <div className="absolute flex h-full w-full">
       <Sidebar />
-      <div className="flex flex-1 flex-col w-full h-auto "> {children}</div>
+      <main className="flex h-full w-full flex-1 flex-col overflow-y-scroll p-6 md:p-10 "> {children}</main>
     </div>
   )
 }

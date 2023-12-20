@@ -48,7 +48,7 @@ export default function Login() {
           title: 'Uspjesno ste se ulogirali!',
           description: response.message,
         })
-        router.push('/dashboard')
+        router.push('/my-forms')
       }
     },
 
@@ -70,13 +70,13 @@ export default function Login() {
   }
 
   return (
-    <div className="w-full h-full flex justify-between ">
-      <div className="hidden h-full lg:w-[55%] xl:w-[50%] lg:flex items-center justify-center bg-zinc-100  dark:bg-zinc-900 relative">
+    <div className="flex h-full w-full justify-between ">
+      <div className="relative hidden h-full items-center justify-center bg-zinc-100 dark:bg-zinc-900 lg:flex  lg:w-[55%] xl:w-[50%]">
         <Link href="/">
           <Logo size="300" />
         </Link>
       </div>
-      <main className="flex w-full lg:w-[45%] xl:w-[50%] px-4 lg:px-0 h-full items-center justify-center py-12 bg-white dark:bg-gray-800">
+      <main className="flex h-full w-full items-center justify-center bg-white px-4 py-12 dark:bg-gray-800 lg:w-[45%] lg:px-0 xl:w-[50%]">
         <Form {...loginForm}>
           <form className="mx-auto w-[350px]" onSubmit={loginForm.handleSubmit(onSubmit)}>
             <div className="space-y-2 text-left">
@@ -116,10 +116,10 @@ export default function Login() {
                 Prijavi se
               </Button>
             </div>
-            <div className="mt-4 text-center text-sm select-none">
+            <div className="mt-4 select-none text-center text-sm">
               Nemate korisnički račun?{' '}
               <Link
-                className="underline  text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                className="text-blue-500  underline hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
                 href="/register"
               >
                 Registrirajte se

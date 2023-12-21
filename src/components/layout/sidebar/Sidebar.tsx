@@ -1,7 +1,8 @@
 'use client'
 
 import { FilePlus2, Home, Settings } from 'lucide-react'
-import { ReactNode, useState } from 'react'
+import { usePathname } from 'next/navigation'
+import { ReactNode, useEffect, useState } from 'react'
 
 import SidebarSection from './SidebarSection'
 
@@ -35,7 +36,13 @@ const SidebarItemsAdmin: SidebarSectionProps[] = [
 ]
 
 const Sidebar = () => {
-  const [currentPage, setCurrentPage] = useState('Moji obrazci')
+  const [currentPage, setCurrentPage] = useState('my-forms')
+
+  const pathname = usePathname()
+
+  useEffect(() => {
+    setCurrentPage(pathname)
+  }, [pathname])
 
   return (
     <aside className="relative left-0 top-0 flex h-full w-[320px] flex-col border-r-[1px] bg-zinc-200 dark:bg-gray-800">
@@ -56,7 +63,6 @@ const Sidebar = () => {
             pageIcons={section.pageIcons}
             pageRoutes={section.pageRoutes}
             currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
           />
         ))}
       </div>

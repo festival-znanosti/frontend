@@ -1,4 +1,4 @@
-const BASE_URL = 'https://4ivliy722g3exbyg.myfritz.net:7282' as const
+const BASE_URL = 'https://festivalznanostiapi20231221212245.azurewebsites.net/' as const
 
 // Auth
 export const AUTH_BASE_URL = `${BASE_URL}/Auth` as const

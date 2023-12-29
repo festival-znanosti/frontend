@@ -5,6 +5,7 @@ import { SelectContent, SelectViewport } from '@radix-ui/react-select'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
+import Calendar from '@/components/random/Calendar'
 import PageTitle from '@/components/random/PageTitle'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -64,7 +65,6 @@ export default function NewForm() {
     })
   }
   return (
-    // <main className="p-6 md:p-10 h-full w-auto overflow-y-scroll">
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <PageTitle title="Obrazac za prijavu" description="Unesite informacije vezane uz dogadaj" />
@@ -215,11 +215,18 @@ export default function NewForm() {
             )}
           /> */}
 
+        {/* <PageTitle
+          title="Predloženi termin događanja:"
+          description="Napomena ukoliko je izabrana bilo koje događanje osim predavanja - kino dvorana: Odabrani termin uključuje i vrijeme koje Vam je potrebno za postavljanje i raspremanje. Možete odabrati jedan termin ili više uzastopnih termina, npr. ukoliko Vam je za radionicu potrebno sat i 15 minuta uključujući postavljanje i raspremanje, odaberite tri uzastopna termina od po pola sata."
+        /> */}
+        <br />
+
+        <Calendar />
+
         <Button type="submit" className="mt-6">
           Submit
         </Button>
       </form>
     </Form>
-    // </main>
   )
 }

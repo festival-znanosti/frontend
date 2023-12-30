@@ -1,7 +1,7 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { RefObject, useEffect, useState } from 'react'
-import Draggable from 'react-draggable'
-import { DraggableData, DraggableEventHandler } from 'react-draggable'
+import Draggable, { DraggableEvent } from 'react-draggable'
+import { DraggableData } from 'react-draggable'
 
 import useElementSize from '@/lib/useElementSize'
 import { useMediaQuery } from '@/lib/useMediaQuery'
@@ -14,9 +14,19 @@ interface RowHeightRefType extends RefObject<HTMLDivElement> {
   current: HTMLDivElement | null
 }
 
-export default function Calendar() {
-  // const [selectedDate, setSelectedDate] = useState(new Date())
+type EventType = {
+  id: number
+  title: string
+  gridRowStart: number
+  gridRowEnd: number
+  gridColumnStart: number
+  gridColumnEnd: number
+  x: number
+  y: number
+  startTime: number
+}
 
+export default function Calendar() {
   const { width: columnWidth, elementRef: columnWidthRef } = useElementSize() as {
     width: number
     elementRef: ColumnWidthRefType
@@ -29,8 +39,24 @@ export default function Calendar() {
   const isWeekCalendar = useMediaQuery('(min-width: 1024px)')
 
   const [draggablePosition, setDraggablePosition] = useState({ x: 0, y: 0 })
+  useEffect(() => {
+    const handleResize = () => {
+      if (isWeekCalendar) {
+        const newX = Math.round(draggablePosition.x / columnWidth) * columnWidth
+        const newY = Math.round(draggablePosition.y / (rowHeight / 6)) * (rowHeight / 6)
+        setDraggablePosition({ x: newX, y: newY })
+      } else {
+        const newX = 0
+        const newY = Math.round(draggablePosition.y / (rowHeight / 6)) * (rowHeight / 6)
+        setDraggablePosition({ x: newX, y: newY })
+      }
+    }
 
-  const handleDragStop: DraggableEventHandler = (_e, data: DraggableData) => {
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [columnWidth, rowHeight, draggablePosition])
+
+  const handleDragStop2 = (_e: DraggableEvent, data: DraggableData) => {
     // x and y coordinates
     const nearestX = Math.round(data.x / columnWidth) * columnWidth
     const nearestY = Math.round(data.y / (rowHeight / 6)) * (rowHeight / 6)
@@ -49,22 +75,89 @@ export default function Calendar() {
     console.log(`Calculated Date and Time: ${newDate}`)
   }
 
+  /// ///////////////////
+
+  const [events, setEvents] = useState<EventType[]>([])
+
+  const addNewEvent = () => {
+    const newEvent: EventType = {
+      id: events.length + 1,
+      title: 'New Event',
+      gridRowStart: 2,
+      gridRowEnd: 12,
+      gridColumnStart: 1,
+      gridColumnEnd: 2,
+      x: 0,
+      y: 0,
+      startTime: new Date(2024, 3, 22).setHours(10),
+    }
+
+    setEvents([...events, newEvent])
+  }
+
+  const handleDragStop = (_e: DraggableEvent, data: DraggableData, eventID: number) => {
+    // Calculate nearest X and Y based on grid dimensions
+    const nearestX = Math.round(data.x / columnWidth) * columnWidth
+    const nearestY = Math.round(data.y / (rowHeight / 6)) * (rowHeight / 6)
+
+    // Update the position of the specific event
+    setEvents(
+      events.map((event) => {
+        if (event.id === eventID) {
+          // Calculate time and date from nearestX and nearestY
+          const baseDate = new Date(2024, 3, 22) // April 22, 2024 (month is 0-indexed)
+          const daysToAdd = nearestX / columnWidth
+          const minutesToAdd = (nearestY / (rowHeight / 6)) * 5
+
+          const newDate = new Date(baseDate)
+          newDate.setDate(baseDate.getDate() + daysToAdd)
+          newDate.setHours(10, minutesToAdd)
+
+          // Log the calculated date and time
+          console.log(`Dragged Event ID: ${eventID}, New Date and Time: ${newDate}`)
+
+          // Update the event's position and start time
+          return { ...event, x: nearestX, y: nearestY, startTime: newDate.getTime() }
+        }
+        return event
+      })
+    )
+  }
+
   useEffect(() => {
     const handleResize = () => {
       if (isWeekCalendar) {
-        const newX = Math.round(draggablePosition.x / columnWidth) * columnWidth
-        const newY = Math.round(draggablePosition.y / (rowHeight / 6)) * (rowHeight / 6)
-        setDraggablePosition({ x: newX, y: newY })
+        events.map((event) => {
+          const newX = Math.round(event.x / columnWidth) * columnWidth
+          const newY = Math.round(event.y / (rowHeight / 6)) * (rowHeight / 6)
+          return setEvents((prevState) => {
+            return prevState.map((prevEvent) => {
+              if (prevEvent.id === event.id) {
+                return { ...prevEvent, x: newX, y: newY }
+              }
+              return prevEvent
+            })
+          })
+        })
       } else {
-        const newX = 0
-        const newY = Math.round(draggablePosition.y / (rowHeight / 6)) * (rowHeight / 6)
-        setDraggablePosition({ x: newX, y: newY })
+        events.map((event) => {
+          const newX = 0
+          const newY = Math.round(event.y / (rowHeight / 6)) * (rowHeight / 6)
+          return setEvents((prevState) => {
+            return prevState.map((prevEvent) => {
+              if (prevEvent.id === event.id) {
+                return { ...prevEvent, x: newX, y: newY }
+              }
+              return prevEvent
+            })
+          })
+        })
       }
     }
 
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
-  }, [columnWidth, rowHeight, draggablePosition])
+  }, [columnWidth, rowHeight, isWeekCalendar])
 
   return (
     <div className="flex h-auto w-full flex-col">
@@ -95,6 +188,7 @@ export default function Calendar() {
 
         <button
           type="button"
+          onClick={addNewEvent}
           className="ml-4 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
         >
           Dodaj događaj
@@ -276,7 +370,7 @@ export default function Calendar() {
                   axis={isWeekCalendar ? 'both' : 'y'}
                   grid={isWeekCalendar ? [columnWidth, rowHeight / 6] : undefined}
                   position={draggablePosition}
-                  onStop={handleDragStop}
+                  onStop={handleDragStop2}
                   bounds={{
                     left: 0,
                     right: 6 * columnWidth,
@@ -291,6 +385,32 @@ export default function Calendar() {
                     </div>
                   </li>
                 </Draggable>
+                {events.map((event) => (
+                  <Draggable
+                    key={event.id}
+                    axis={isWeekCalendar ? 'both' : 'y'}
+                    grid={isWeekCalendar ? [columnWidth, rowHeight / 6] : undefined}
+                    position={{ x: event.x, y: event.y }}
+                    onStop={(e, data) => handleDragStop(e, data, event.id)}
+                    bounds={{
+                      left: 0,
+                      right: 6 * columnWidth,
+                      top: 0,
+                      bottom: 18 * (rowHeight + 1), // + 1 because of border
+                    }}
+                  >
+                    <li
+                      style={{
+                        gridRow: `${event.gridRowStart} / span ${event.gridRowEnd}`,
+                        maxWidth: `${columnWidth}`,
+                      }}
+                      className="group inset-4 flex flex-col  rounded-lg bg-blue-50 p-2 text-xs leading-5 hover:bg-blue-100"
+                    >
+                      <p className="order-1 font-semibold text-blue-700">{event.title}</p>
+                      <p className="text-blue-500">{new Date(event.startTime).toDateString()}</p>
+                    </li>
+                  </Draggable>
+                ))}
               </ol>
             </div>
           </div>

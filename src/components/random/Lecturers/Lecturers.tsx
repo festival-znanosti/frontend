@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 
@@ -17,7 +17,7 @@ export const LecturerSchema = z.object({
     .min(3, {
       message: '*',
     })
-    .email(' ' + ' Koristite valjanu email adresu.'),
+    .email(' ' + 'Koristite valjanu email adresu.'),
 })
 
 const LecturerArraySchema = z.array(LecturerSchema)

@@ -14,6 +14,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Select, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
 import { toast } from '@/components/ui/use-toast'
 
 const EVENT_TYPES = [
@@ -42,6 +43,7 @@ const EventFormSchema = z
     visitorsCount: z.coerce.number().positive('Broj posjetitelja mora biti veći od 0'),
     mainLecturer: z.array(LecturerSchema).length(1, 'Morate dodati glavnog sudionika'),
     lecturers: z.array(LecturerSchema).length(1, 'Dodajte barem jednog sudionika'),
+    equipment: z.string().min(1, 'Navedite što je potrebno i ako postoje kakve napomene.'),
   })
   .refine((data) => !isNaN(data.visitorsCount), {
     message: 'Broj posjetitelja mora biti broj',
@@ -57,6 +59,7 @@ export default function NewForm() {
       visitorsCount: undefined,
       mainLecturer: [],
       lecturers: [],
+      equipment: '',
     },
   })
 
@@ -261,6 +264,51 @@ export default function NewForm() {
               </div>
               <FormControl>
                 <Lecturers lecturers={lecturers} setLecturers={setLecturers} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <br />
+
+        {/* potrebna oprema */}
+        <FormField
+          control={form.control}
+          name="equipment"
+          render={() => (
+            <FormItem>
+              <div className="mb-4">
+                <FormLabel className="text-base">Sudionici događanja:</FormLabel>
+                <FormDescription>
+                  Navesti ime i kontakt svih osoba koje su uz voditelja sudionici predavanja / radionice / prezentacije.
+                </FormDescription>
+              </div>
+              <FormControl>
+                <Lecturers lecturers={lecturers} setLecturers={setLecturers} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <br />
+
+        <FormField
+          control={form.control}
+          name="equipment"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel htmlFor="equipment">Potrebna oprema i podrška:</FormLabel>
+              <FormDescription>
+                Mi osiguravamo laptop / kompjuter, projektor / TV ekran i pristup internetu, potreban Vam je samo usb,
+                navedite ako je još nešto potrebno ili imate posebne napomene.
+              </FormDescription>
+              <FormControl>
+                <Textarea
+                  id="equipment"
+                  placeholder="LCD projektor, platno, TV, računalo, stolice…)"
+                  className="resize-none"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

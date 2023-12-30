@@ -26,7 +26,7 @@ const RegisterSchema = z
       .min(3, {
         message: '*',
       })
-      .email(' ' + ' Koristite valjanu email adresu.'),
+      .email('Koristite valjanu email adresu.'),
 
     password: z.string().min(8, {
       message: 'Koristite lozinku od barem 8 znakova.',
@@ -131,7 +131,7 @@ export default function Register() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <div className="flex gap-2">
+                  <div className="flex">
                     <FormLabel htmlFor="email">Email</FormLabel>
                     <FormMessage className="text-sm font-medium leading-none" />
                   </div>

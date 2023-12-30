@@ -84,17 +84,6 @@ const Lecturers = ({
     <>
       <Form {...lecturerForm}>
         <form className="w-full">
-          <div className="mb-4">
-            <FormLabel className="text-base" htmlFor="lecturers">
-              {main ? 'Voditelj događanja:' : 'Sudionici događanja:'}
-            </FormLabel>
-            <FormDescription>
-              {main
-                ? 'Navesti ime i kontakt jedne osobe koja je voditelj predavanja / radionice / prezentacije.'
-                : 'Navesti ime i kontakt svih osoba koje su uz voditelja sudionici predavanja / radionice / prezentacije.'}
-            </FormDescription>
-          </div>
-
           <div className="flex w-full flex-col items-center gap-4">
             <div className="flex w-full items-center gap-2">
               <FormField
@@ -130,7 +119,7 @@ const Lecturers = ({
               />
             </div>
 
-            <div className="flex w-full items-center gap-2">
+            <div className="flex h-full w-full items-center gap-2">
               <FormField
                 control={lecturerForm.control}
                 name="lecturerEmail"
@@ -163,9 +152,11 @@ const Lecturers = ({
                 )}
               />
 
-              <Button onClick={addLecturer} type="button" className="mt-6" disabled={main && lecturers.length === 1}>
-                Dodaj sudionika
-              </Button>
+              <div className="flex h-[62px] items-end ">
+                <Button onClick={addLecturer} type="button" disabled={main && lecturers.length === 1}>
+                  Dodaj sudionika
+                </Button>
+              </div>
             </div>
           </div>
         </form>

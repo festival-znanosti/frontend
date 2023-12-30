@@ -2,8 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { SelectContent, SelectViewport } from '@radix-ui/react-select'
-import { X } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -41,6 +40,7 @@ const EventFormSchema = z
       message: 'Odaberite barem jedan uzrast',
     }),
     visitorsCount: z.coerce.number().positive('Broj posjetitelja mora biti veći od 0'),
+    mainLecturer: z.array(LecturerSchema).length(1, 'Morate dodati glavnog sudionika'),
     lecturers: z.array(LecturerSchema).length(1, 'Dodajte barem jednog sudionika'),
   })
   .refine((data) => !isNaN(data.visitorsCount), {
@@ -48,9 +48,6 @@ const EventFormSchema = z
   })
 
 export default function NewForm() {
-  const [lecturers, setLecturers] = useState<LecturerArrayType>([])
-  const [mainLecturer, setMainLecturer] = useState<LecturerArrayType>([])
-
   const form = useForm<z.infer<typeof EventFormSchema>>({
     resolver: zodResolver(EventFormSchema),
     defaultValues: {
@@ -58,9 +55,34 @@ export default function NewForm() {
       type: '',
       participantsAges: [],
       visitorsCount: undefined,
+      mainLecturer: [],
       lecturers: [],
     },
   })
+
+  const [mainLecturer, setMainLecturer] = useState<LecturerArrayType>([])
+  const [lecturers, setLecturers] = useState<LecturerArrayType>([])
+  const initialRender = useRef(true)
+
+  useEffect(() => {
+    if (initialRender.current === true) {
+      initialRender.current = false
+      return
+    } else {
+      form.setValue('mainLecturer', mainLecturer)
+      form.trigger(['mainLecturer'])
+    }
+  }, [mainLecturer])
+
+  useEffect(() => {
+    if (initialRender.current === true) {
+      initialRender.current = false
+      return
+    } else {
+      form.setValue('lecturers', lecturers)
+      form.trigger(['lecturers'])
+    }
+  }, [lecturers])
 
   function onSubmit(data: z.infer<typeof EventFormSchema>) {
     toast({
@@ -202,37 +224,55 @@ export default function NewForm() {
             </FormItem>
           )}
         />
-
         <br />
-        {/* glavni voditelj */}
-        <Lecturers lecturers={mainLecturer} setLecturers={setMainLecturer} main={true} />
+
+        {/* glavni sudionik */}
+        <FormField
+          control={form.control}
+          name="mainLecturer"
+          render={() => (
+            <FormItem>
+              <div className="mb-4">
+                <FormLabel className="text-base">Voditelj događanja:</FormLabel>
+                <FormDescription>
+                  Navesti ime i kontakt jedne osobe koja je voditelj predavanja / radionice / prezentacije.
+                </FormDescription>
+              </div>
+              <FormControl>
+                <Lecturers lecturers={mainLecturer} setLecturers={setMainLecturer} main={true} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <br />
-        <Lecturers lecturers={lecturers} setLecturers={setLecturers} />
 
-        {/* <div>
-          {form.getValues('lecturers').map((lecturer, index) => (
-            <div key={index} className="mb-2 flex w-full items-center gap-4">
-              <p>
-                {lecturer.lecturerName} {lecturer.lecturerSurname} {lecturer.lecturerPhoneNumber}{' '}
-                {lecturer.lecturerEmail}
-              </p>
-              <Button type="button" onClick={() => removeLecturer(index)}>
-                X
-              </Button>
-            </div>
-          ))}
-        </div> */}
-
-        {/* <PageTitle
-          title="Predloženi termin događanja:"
-          description="Napomena ukoliko je izabrana bilo koje događanje osim predavanja - kino dvorana: Odabrani termin uključuje i vrijeme koje Vam je potrebno za postavljanje i raspremanje. Možete odabrati jedan termin ili više uzastopnih termina, npr. ukoliko Vam je za radionicu potrebno sat i 15 minuta uključujući postavljanje i raspremanje, odaberite tri uzastopna termina od po pola sata."
-        /> */}
+        {/* ostali sudionici */}
+        <FormField
+          control={form.control}
+          name="lecturers"
+          render={() => (
+            <FormItem>
+              <div className="mb-4">
+                <FormLabel className="text-base">Sudionici događanja:</FormLabel>
+                <FormDescription>
+                  Navesti ime i kontakt svih osoba koje su uz voditelja sudionici predavanja / radionice / prezentacije.
+                </FormDescription>
+              </div>
+              <FormControl>
+                <Lecturers lecturers={lecturers} setLecturers={setLecturers} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <br />
 
         <Calendar />
+        <br />
 
         <Button type="submit" className="mt-6">
-          <X />
+          Predaj
         </Button>
       </form>
     </Form>

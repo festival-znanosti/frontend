@@ -2,10 +2,13 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { SelectContent, SelectViewport } from '@radix-ui/react-select'
+import { X } from 'lucide-react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 import Calendar from '@/components/random/Calendar/Calendar'
+import Lecturers, { LecturerArrayType, LecturerSchema } from '@/components/random/Lecturers/Lecturers'
 import PageTitle from '@/components/random/PageTitle'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -38,12 +41,16 @@ const EventFormSchema = z
       message: 'Odaberite barem jedan uzrast',
     }),
     visitorsCount: z.coerce.number().positive('Broj posjetitelja mora biti veći od 0'),
+    lecturers: z.array(LecturerSchema).length(1, 'Dodajte barem jednog sudionika'),
   })
   .refine((data) => !isNaN(data.visitorsCount), {
     message: 'Broj posjetitelja mora biti broj',
   })
 
 export default function NewForm() {
+  const [lecturers, setLecturers] = useState<LecturerArrayType>([])
+  const [mainLecturer, setMainLecturer] = useState<LecturerArrayType>([])
+
   const form = useForm<z.infer<typeof EventFormSchema>>({
     resolver: zodResolver(EventFormSchema),
     defaultValues: {
@@ -51,6 +58,7 @@ export default function NewForm() {
       type: '',
       participantsAges: [],
       visitorsCount: undefined,
+      lecturers: [],
     },
   })
 
@@ -64,6 +72,7 @@ export default function NewForm() {
       ),
     })
   }
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -194,26 +203,25 @@ export default function NewForm() {
           )}
         />
 
-        {/* <FormField
-            control={form.control}
-            name="director"
-            render={({ field }) => (
-              <FormItem className="mt-6">
-                <div className="mb-4">
-                  <FormLabel className="text-base" htmlFor="director">
-                    Voditelj događanja
-                  </FormLabel>
-                  <FormDescription>
-                    Navesti ime i kontakt jedne osobe koja je voditelj predavanja / radionice / prezentacije.
-                  </FormDescription>
-                </div>
-                <FormControl>
-                  <Input id="director" placeholder="ime i prezime, kontakt telefon i e mail adresa" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          /> */}
+        <br />
+        {/* glavni voditelj */}
+        <Lecturers lecturers={mainLecturer} setLecturers={setMainLecturer} main={true} />
+        <br />
+        <Lecturers lecturers={lecturers} setLecturers={setLecturers} />
+
+        {/* <div>
+          {form.getValues('lecturers').map((lecturer, index) => (
+            <div key={index} className="mb-2 flex w-full items-center gap-4">
+              <p>
+                {lecturer.lecturerName} {lecturer.lecturerSurname} {lecturer.lecturerPhoneNumber}{' '}
+                {lecturer.lecturerEmail}
+              </p>
+              <Button type="button" onClick={() => removeLecturer(index)}>
+                X
+              </Button>
+            </div>
+          ))}
+        </div> */}
 
         {/* <PageTitle
           title="Predloženi termin događanja:"
@@ -224,7 +232,7 @@ export default function NewForm() {
         <Calendar />
 
         <Button type="submit" className="mt-6">
-          Submit
+          <X />
         </Button>
       </form>
     </Form>

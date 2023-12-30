@@ -24,9 +24,9 @@ const RegisterSchema = z
     email: z
       .string()
       .min(3, {
-        message: 'Email je obavezan.',
+        message: '*',
       })
-      .email('Koristite valjanu email adresu.'),
+      .email(' ' + ' Koristite valjanu email adresu.'),
 
     password: z.string().min(8, {
       message: 'Koristite lozinku od barem 8 znakova.',
@@ -88,9 +88,9 @@ export default function Register() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen ">
-      <div className="w-full max-w-md p-8 space-y-4  rounded-xl shadow-md bg-white dark:bg-gray-800">
-        <h2 className="text-2xl font-bold text-center">Pridružite se</h2>
+    <div className="flex min-h-screen flex-col items-center justify-center ">
+      <div className="w-full max-w-md space-y-4 rounded-xl  bg-white px-8 py-6 shadow-md dark:bg-gray-800">
+        <h2 className="text-center text-2xl font-bold">Pridružite se</h2>
         <p className="text-center text-gray-600 dark:text-gray-400">Kreirajte svoj korisnički račun</p>
         <Form {...registerForm}>
           <form className="space-y-2" onSubmit={registerForm.handleSubmit(onSubmit)}>
@@ -131,11 +131,13 @@ export default function Register() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel htmlFor="email">Email</FormLabel>
+                  <div className="flex gap-2">
+                    <FormLabel htmlFor="email">Email</FormLabel>
+                    <FormMessage className="text-sm font-medium leading-none" />
+                  </div>
                   <FormControl>
                     <Input id="email" placeholder="ivan.horvat@festival-znanosti.hr" {...field} />
                   </FormControl>
-                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -145,11 +147,13 @@ export default function Register() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel htmlFor="password">Lozinka</FormLabel>
+                  <div className="flex gap-2">
+                    <FormLabel htmlFor="password">Lozinka</FormLabel>
+                    <FormMessage className="text-sm font-medium leading-none" />
+                  </div>
                   <FormControl>
                     <Input id="password" placeholder="FestivalZnanostiJeZakon123" type="password" {...field} />
                   </FormControl>
-                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -159,11 +163,14 @@ export default function Register() {
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel htmlFor="confirm-password">Potvrdite Lozinku</FormLabel>
+                  <div className="flex gap-2">
+                    <FormLabel htmlFor="confirm-password">Potvrdite Lozinku</FormLabel>
+                    <FormMessage className="text-sm font-medium leading-none" />
+                  </div>
+
                   <FormControl>
                     <Input id="confirm-password" placeholder="FestivalZnanostiJeZakon123" type="password" {...field} />
                   </FormControl>
-                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -173,10 +180,10 @@ export default function Register() {
             </Button>
           </form>
         </Form>
-        <p className="text-center select-none">
+        <p className="select-none text-center">
           Već imate korisnički račun?{' '}
           <Link
-            className="underline text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+            className="text-blue-500 underline hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
             href="/login"
           >
             Prijavite se

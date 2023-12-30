@@ -1,6 +1,7 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { RefObject, useState } from 'react'
+import { RefObject, useEffect, useState } from 'react'
 import Draggable from 'react-draggable'
+import { DraggableData, DraggableEventHandler } from 'react-draggable'
 
 import useElementSize from '@/lib/useElementSize'
 import { useMediaQuery } from '@/lib/useMediaQuery'
@@ -25,19 +26,45 @@ export default function Calendar() {
     height: number
     elementRef: RowHeightRefType
   }
+  const isWeekCalendar = useMediaQuery('(min-width: 1024px)')
 
   const [draggablePosition, setDraggablePosition] = useState({ x: 0, y: 0 })
-  // @ts-ignore
-  const handleDragStop = (e, data) => {
-    // Calculate the nearest snap point for x and y
+
+  const handleDragStop: DraggableEventHandler = (_e, data: DraggableData) => {
+    // x and y coordinates
     const nearestX = Math.round(data.x / columnWidth) * columnWidth
     const nearestY = Math.round(data.y / (rowHeight / 6)) * (rowHeight / 6)
-
-    // Update the state with the snapped position
     setDraggablePosition({ x: nearestX, y: nearestY })
+
+    // Calculate time and date from nearestX and nearestY
+    const baseDate = new Date(2024, 3, 22) // April 22, 2024 (month is 0-indexed)
+    const daysToAdd = nearestX / columnWidth
+    const minutesToAdd = (nearestY / (rowHeight / 6)) * 5
+
+    const newDate = new Date(baseDate)
+    newDate.setDate(baseDate.getDate() + daysToAdd)
+    newDate.setHours(10, minutesToAdd)
+
+    // Now newDate holds the calculated date and time
+    console.log(`Calculated Date and Time: ${newDate}`)
   }
 
-  const isWeekCalendar = useMediaQuery('(min-width: 1024px)')
+  useEffect(() => {
+    const handleResize = () => {
+      if (isWeekCalendar) {
+        const newX = Math.round(draggablePosition.x / columnWidth) * columnWidth
+        const newY = Math.round(draggablePosition.y / (rowHeight / 6)) * (rowHeight / 6)
+        setDraggablePosition({ x: newX, y: newY })
+      } else {
+        const newX = 0
+        const newY = Math.round(draggablePosition.y / (rowHeight / 6)) * (rowHeight / 6)
+        setDraggablePosition({ x: newX, y: newY })
+      }
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [columnWidth, rowHeight, draggablePosition])
 
   return (
     <div className="flex h-auto w-full flex-col">
@@ -74,10 +101,7 @@ export default function Calendar() {
         </button>
       </div>
       <div className="isolate flex flex-auto flex-col overflow-auto bg-white">
-        <div
-          // style={{ width: '165%' }}
-          className="flex max-w-full flex-none flex-col "
-        >
+        <div className="flex  flex-none flex-col ">
           <div className="sticky top-0 z-30 flex-none bg-white shadow ring-1 ring-black ring-opacity-5 ">
             {/* Calendar labels small screen */}
             <div className="grid grid-cols-7 text-sm leading-6 text-gray-500 lg:hidden">
@@ -249,10 +273,6 @@ export default function Calendar() {
                 style={{ gridTemplateRows: '1.75rem repeat(120, minmax(0, 1fr)) auto' }}
               >
                 <Draggable
-                  // onDrag={onDrag}
-                  // bounds="parent"
-                  // onStart={onDragStart}
-                  // onStop={onDragStop}
                   axis={isWeekCalendar ? 'both' : 'y'}
                   grid={isWeekCalendar ? [columnWidth, rowHeight / 6] : undefined}
                   position={draggablePosition}
@@ -266,10 +286,8 @@ export default function Calendar() {
                 >
                   <li className="relative flex " style={{ gridRow: '2 / span 12' }}>
                     <div className="group absolute inset-1 flex flex-col overflow-y-auto rounded-lg bg-blue-50 p-2 text-xs leading-5 hover:bg-blue-100">
-                      <p className="order-1 font-semibold text-blue-700">Breakfast</p>
-                      <p className="text-blue-500 group-hover:text-blue-700">
-                        <time dateTime="2022-01-12T06:00">6:00 AM</time>
-                      </p>
+                      <p className="order-1 font-semibold text-blue-700">TMNT prva forma</p>
+                      <p className="text-blue-500 group-hover:text-blue-700">6:00 AM</p>
                     </div>
                   </li>
                 </Draggable>

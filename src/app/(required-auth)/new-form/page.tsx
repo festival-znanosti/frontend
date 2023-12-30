@@ -5,7 +5,7 @@ import { SelectContent, SelectViewport } from '@radix-ui/react-select'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
-import Calendar from '@/components/random/Calendar'
+import Calendar from '@/components/random/Calendar/Calendar'
 import PageTitle from '@/components/random/PageTitle'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'

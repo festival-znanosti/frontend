@@ -1,5 +1,5 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { RefObject } from 'react'
+import { RefObject, useState } from 'react'
 import Draggable from 'react-draggable'
 
 import useElementWidth from '@/lib/useElementWidth'
@@ -10,6 +10,8 @@ interface ColumnWidthRefType extends RefObject<HTMLDivElement> {
 }
 
 export default function Calendar() {
+  const [selectedDate, setSelectedDate] = useState(new Date())
+
   const { width: columnWidth, elementRef: columnWidthRef } = useElementWidth() as {
     width: number
     elementRef: ColumnWidthRefType
@@ -61,7 +63,7 @@ export default function Calendar() {
                 U <span className="mt-1 flex h-8 w-8 items-center justify-center font-semibold text-gray-900">23</span>
               </button>
               <button type="button" className="flex flex-col items-center pb-3 pt-2">
-                S{' '}
+                S
                 <span className="mt-1 flex h-8 w-8 items-center justify-center rounded-full bg-indigo-600 font-semibold text-white">
                   24
                 </span>
@@ -88,8 +90,11 @@ export default function Calendar() {
                 </span>
               </div>
               <div className="flex items-center justify-center py-3">
-                <span>
-                  Uto <span className="items-center justify-center font-semibold text-gray-900">23</span>
+                <span className="flex items-baseline">
+                  Uto
+                  <span className="ml-1.5 flex h-8 w-8 items-center justify-center rounded-full bg-indigo-600 font-semibold text-white">
+                    23
+                  </span>
                 </span>
               </div>
               <div className="flex items-center justify-center py-3">
@@ -230,32 +235,20 @@ export default function Calendar() {
                 className="col-start-1 col-end-2 row-start-1 grid grid-cols-1 lg:grid-cols-7 lg:pr-8"
                 style={{ gridTemplateRows: '1.75rem repeat(144, minmax(0, 1fr)) auto' }}
               >
-                <li className="relative mt-px flex lg:col-start-3" style={{ gridRow: '74 / span 12' }}>
-                  <a
-                    href="#"
-                    className="group absolute inset-1 flex flex-col overflow-y-auto rounded-lg bg-blue-50 p-2 text-xs leading-5 hover:bg-blue-100"
-                  >
-                    <p className="order-1 font-semibold text-blue-700">Breakfast</p>
-                    <p className="text-blue-500 group-hover:text-blue-700">
-                      <time dateTime="2022-01-12T06:00">6:00 AM</time>
-                    </p>
-                  </a>
-                </li>
                 <Draggable
                   // onDrag={onDrag}
                   // bounds="parent"
                   // onStart={onDragStart}
                   // onStop={onDragStop}
                   axis={isWeekCalendar ? 'both' : 'y'}
-                  // @ts-ignore
                   grid={[columnWidth, 50]}
                   position={{ x: 0, y: 0 }}
                 >
-                  <li className="relative mt-px hidden sm:col-start-6 sm:flex" style={{ gridRow: '84 / span 24' }}>
-                    <div className="group absolute inset-1 flex flex-col overflow-y-auto rounded-lg bg-gray-100 p-2 text-xs leading-5 hover:bg-gray-200">
-                      <p className="order-1 font-semibold text-gray-700">Meeting with design team at Disney</p>
-                      <p className="text-gray-500 group-hover:text-gray-700">
-                        <time dateTime="2022-01-15T10:00">10:00 AM</time>
+                  <li className="relative mt-px flex lg:col-start-3" style={{ gridRow: '74 / span 12' }}>
+                    <div className="group absolute inset-1 flex flex-col overflow-y-auto rounded-lg bg-blue-50 p-2 text-xs leading-5 hover:bg-blue-100">
+                      <p className="order-1 font-semibold text-blue-700">Breakfast</p>
+                      <p className="text-blue-500 group-hover:text-blue-700">
+                        <time dateTime="2022-01-12T06:00">6:00 AM</time>
                       </p>
                     </div>
                   </li>

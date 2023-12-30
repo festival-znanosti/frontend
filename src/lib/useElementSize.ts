@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 
-const useElementWidth = () => {
+const useElementSize = () => {
   const [width, setWidth] = useState(0)
+  const [height, setHeight] = useState(0)
+
   const elementRef = useRef<HTMLElement | null>(null)
 
   const updateWidth = () => {
@@ -11,11 +13,19 @@ const useElementWidth = () => {
     }
   }
 
+  const updateHeight = () => {
+    if (elementRef.current) {
+      const currentHeight = elementRef.current.clientHeight
+      setHeight(currentHeight)
+    }
+  }
+
   useEffect(() => {
     const resizeObserverSupported = typeof ResizeObserver !== 'undefined'
 
     const handleResize = () => {
       updateWidth()
+      updateHeight()
     }
 
     if (resizeObserverSupported) {
@@ -38,9 +48,10 @@ const useElementWidth = () => {
 
   useEffect(() => {
     updateWidth()
+    updateHeight()
   }, [elementRef])
 
-  return { width, elementRef }
+  return { width, height, elementRef }
 }
 
-export default useElementWidth
+export default useElementSize

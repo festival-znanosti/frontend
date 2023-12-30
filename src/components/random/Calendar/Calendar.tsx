@@ -2,25 +2,46 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { RefObject, useState } from 'react'
 import Draggable from 'react-draggable'
 
-import useElementWidth from '@/lib/useElementWidth'
+import useElementSize from '@/lib/useElementSize'
 import { useMediaQuery } from '@/lib/useMediaQuery'
 
 interface ColumnWidthRefType extends RefObject<HTMLDivElement> {
   current: HTMLDivElement | null
 }
 
-export default function Calendar() {
-  const [selectedDate, setSelectedDate] = useState(new Date())
+interface RowHeightRefType extends RefObject<HTMLDivElement> {
+  current: HTMLDivElement | null
+}
 
-  const { width: columnWidth, elementRef: columnWidthRef } = useElementWidth() as {
+export default function Calendar() {
+  // const [selectedDate, setSelectedDate] = useState(new Date())
+
+  const { width: columnWidth, elementRef: columnWidthRef } = useElementSize() as {
     width: number
     elementRef: ColumnWidthRefType
+  }
+
+  const { height: rowHeight, elementRef: rowHeightRef } = useElementSize() as {
+    height: number
+    elementRef: RowHeightRefType
+  }
+
+  const [draggablePosition, setDraggablePosition] = useState({ x: 0, y: 0 })
+  // @ts-ignore
+  const handleDragStop = (e, data) => {
+    // Calculate the nearest snap point for x and y
+    const nearestX = Math.round(data.x / columnWidth) * columnWidth
+    const nearestY = Math.round(data.y / (rowHeight / 6)) * (rowHeight / 6)
+
+    // Update the state with the snapped position
+    setDraggablePosition({ x: nearestX, y: nearestY })
   }
 
   const isWeekCalendar = useMediaQuery('(min-width: 1024px)')
 
   return (
     <div className="flex h-auto w-full flex-col">
+      {/** Buttons above calendar */}
       <div className="flex flex-none items-center justify-end border-b border-gray-200 px-6 py-4">
         <div className="relative flex items-center rounded-md bg-white shadow-sm">
           <button
@@ -53,8 +74,12 @@ export default function Calendar() {
         </button>
       </div>
       <div className="isolate flex flex-auto flex-col overflow-auto bg-white">
-        <div style={{ width: '165%' }} className="flex max-w-full flex-none flex-col sm:max-w-full">
+        <div
+          // style={{ width: '165%' }}
+          className="flex max-w-full flex-none flex-col "
+        >
           <div className="sticky top-0 z-30 flex-none bg-white shadow ring-1 ring-black ring-opacity-5 ">
+            {/* Calendar labels small screen */}
             <div className="grid grid-cols-7 text-sm leading-6 text-gray-500 lg:hidden">
               <button type="button" className="flex flex-col items-center pb-3 pt-2">
                 P <span className="mt-1 flex h-8 w-8 items-center justify-center font-semibold text-gray-900">22</span>
@@ -82,6 +107,7 @@ export default function Calendar() {
               </button>
             </div>
 
+            {/* Calendar labels large screen */}
             <div className="-mr-px hidden grid-cols-7 divide-x divide-gray-100 border border-r border-gray-100 text-sm leading-6 text-gray-500 lg:grid">
               <div className="col-end-1 w-14" />
               <div className="flex items-center justify-center py-3">
@@ -131,26 +157,14 @@ export default function Calendar() {
 
           <div className="flex flex-auto">
             <div className="sticky left-0 z-10 w-14 flex-none bg-white ring-1 ring-gray-100" />
-            <div className="grid flex-auto grid-cols-1 grid-rows-1">
+            <div className=" grid flex-auto grid-cols-1 grid-rows-1">
               {/* Horizontal lines */}
               <div
                 className="col-start-1 col-end-2 row-start-1 grid divide-y divide-gray-100"
-                style={{ gridTemplateRows: 'repeat(24, minmax(3.5rem, 1fr))' }}
+                style={{ gridTemplateRows: 'repeat(20, minmax(3.5rem, 1fr))' }}
               >
                 <div className="row-end-1 h-7" />
-                <div>
-                  <div className="sticky left-0 z-20 -ml-14 -mt-2.5 w-14 pr-2 text-right text-xs leading-5 text-gray-400">
-                    08:00
-                  </div>
-                </div>
-                <div />
-                <div>
-                  <div className="sticky left-0 z-20 -ml-14 -mt-2.5 w-14 pr-2 text-right text-xs leading-5 text-gray-400">
-                    09:00
-                  </div>
-                </div>
-                <div />
-                <div>
+                <div ref={rowHeightRef}>
                   <div className="sticky left-0 z-20 -ml-14 -mt-2.5 w-14 pr-2 text-right text-xs leading-5 text-gray-400">
                     10:00
                   </div>
@@ -215,11 +229,10 @@ export default function Calendar() {
                     20:00
                   </div>
                 </div>
-                <div />
               </div>
 
               {/* Vertical lines */}
-              <div className="col-start-1 col-end-2 row-start-1 hidden grid-cols-7 grid-rows-1 divide-x divide-gray-100 lg:grid lg:grid-cols-7">
+              <div className="col-start-1 col-end-2 row-start-1 hidden grid-cols-1 grid-rows-1 divide-x divide-gray-100 lg:grid lg:grid-cols-7">
                 <div className="col-start-1 row-span-full" ref={columnWidthRef} />
                 <div className="col-start-2 row-span-full" />
                 <div className="col-start-3 row-span-full" />
@@ -232,8 +245,8 @@ export default function Calendar() {
 
               {/* Events */}
               <ol
-                className="col-start-1 col-end-2 row-start-1 grid grid-cols-1 lg:grid-cols-7 lg:pr-8"
-                style={{ gridTemplateRows: '1.75rem repeat(144, minmax(0, 1fr)) auto' }}
+                className="col-start-1 col-end-2 row-start-1 row-end-2 grid h-full w-full grid-cols-1 lg:grid-cols-7 "
+                style={{ gridTemplateRows: '1.75rem repeat(120, minmax(0, 1fr)) auto' }}
               >
                 <Draggable
                   // onDrag={onDrag}
@@ -241,10 +254,17 @@ export default function Calendar() {
                   // onStart={onDragStart}
                   // onStop={onDragStop}
                   axis={isWeekCalendar ? 'both' : 'y'}
-                  grid={[columnWidth, 50]}
-                  position={{ x: 0, y: 0 }}
+                  grid={isWeekCalendar ? [columnWidth, rowHeight / 6] : undefined}
+                  position={draggablePosition}
+                  onStop={handleDragStop}
+                  bounds={{
+                    left: 0,
+                    right: 6 * columnWidth,
+                    top: 0,
+                    bottom: 18 * (rowHeight + 1), // + 1 because of border
+                  }}
                 >
-                  <li className="relative mt-px flex lg:col-start-3" style={{ gridRow: '74 / span 12' }}>
+                  <li className="relative flex " style={{ gridRow: '2 / span 12' }}>
                     <div className="group absolute inset-1 flex flex-col overflow-y-auto rounded-lg bg-blue-50 p-2 text-xs leading-5 hover:bg-blue-100">
                       <p className="order-1 font-semibold text-blue-700">Breakfast</p>
                       <p className="text-blue-500 group-hover:text-blue-700">

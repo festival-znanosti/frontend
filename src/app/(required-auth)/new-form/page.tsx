@@ -17,13 +17,7 @@ import { Select, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from '@/components/ui/use-toast'
 
-const EVENT_TYPES = [
-  'Predavanje - kino dvorana',
-  'Prezentacija - izložbena dvorana',
-  'Radionica - izložbena dvorana',
-  'Prezentacija - dvorište',
-  'Radionica - dvorište',
-] as const
+const EVENT_TYPES_STRINGS = ['Predavanje', 'Prezentacija', 'Radionica', 'Izložba'] as const
 
 enum EventType {
   Predavanje = 0,
@@ -43,7 +37,8 @@ const AGE_OF_PARTICIPANTS = [
 const EventFormSchema = z
   .object({
     title: z.string().min(1, 'Naziv događanja je obavezan'),
-    type: z.string().min(1, 'Vrsta događanja je obavezna'),
+    type: z.coerce.number(),
+    // .min(1, 'Vrsta događanja je obavezna'),
     participantsAges: z.array(z.string()).refine((value) => value.some((item) => item), {
       message: 'Odaberite barem jedan uzrast',
     }),
@@ -61,7 +56,7 @@ export default function NewForm() {
     resolver: zodResolver(EventFormSchema),
     defaultValues: {
       title: '',
-      type: '',
+      type: undefined,
       participantsAges: [],
       visitorsCount: undefined,
       mainLecturer: [],
@@ -147,23 +142,27 @@ export default function NewForm() {
                   radionica. Radionice i prezentacije se održavaju u izložbenoj dvorani na stolu s projektorom ili
                   televizorom. Radionicu i prezentaciju moguće je po potrebi i posjećenosti provesti više puta u
                   odabranom terminu. Za lokaciju radionice ili prezentacije možete izabrati i dvorište, ali tada ovisite
-                  o vremenskim prilikama, u dvorištu možemo osigurati izvor struje i televizor.)
+                  o vremenskim prilikama, u dvorištu možemo osigurati izvor struje i televizor.
                 </FormDescription>
               </div>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select
+                onValueChange={(val) => field.onChange(Object(EventType)[val])}
+                defaultValue={form.getValues('type') as unknown as string}
+              >
                 <FormControl>
                   <div className="flex items-center gap-4">
                     <div className="w-[400px]">
                       <SelectTrigger className="w-[400px]">
-                        <SelectValue placeholder="Odaberite" onChange={(val) => val} />
+                        <SelectValue placeholder="Odaberite" />
                       </SelectTrigger>
                     </div>
-                    <p>{form.getValues('type')}</p>
+                    {/* <p>{Object(EventType)[form.getValues('type')]}</p>
+                    <p>{form.getValues('type')}</p> */}
                   </div>
                 </FormControl>
                 <SelectContent>
                   <SelectViewport className="rounded-md border bg-background">
-                    {EVENT_TYPES.map((type, index) => (
+                    {EVENT_TYPES_STRINGS.map((type, index) => (
                       <SelectItem value={type} key={index}>
                         {type}
                       </SelectItem>

@@ -17,8 +17,6 @@ import { Select, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from '@/components/ui/use-toast'
 
-const EVENT_TYPES_STRINGS = ['Predavanje', 'Prezentacija', 'Radionica', 'Izložba'] as const
-
 enum EventType {
   Predavanje = 0,
   Prezentacija = 1,
@@ -156,17 +154,19 @@ export default function NewForm() {
                         <SelectValue placeholder="Odaberite" />
                       </SelectTrigger>
                     </div>
-                    {/* <p>{Object(EventType)[form.getValues('type')]}</p>
-                    <p>{form.getValues('type')}</p> */}
+                    {/* <p>{Object(EventType)[form.getValues('type')]}</p> */}
+                    {/* <p>{form.getValues('type')}</p> */}
                   </div>
                 </FormControl>
                 <SelectContent>
                   <SelectViewport className="rounded-md border bg-background">
-                    {EVENT_TYPES_STRINGS.map((type, index) => (
-                      <SelectItem value={type} key={index}>
-                        {type}
-                      </SelectItem>
-                    ))}
+                    {Object.keys(EventType)
+                      .filter((val) => isNaN(+val))
+                      .map((type, index) => (
+                        <SelectItem value={type} key={index}>
+                          {type}
+                        </SelectItem>
+                      ))}
                   </SelectViewport>
                 </SelectContent>
               </Select>

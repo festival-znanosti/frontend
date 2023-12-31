@@ -25,6 +25,13 @@ const EVENT_TYPES = [
   'Radionica - dvorište',
 ] as const
 
+enum EventType {
+  Predavanje = 0,
+  Prezentacija = 1,
+  Radionica = 2,
+  Izložba = 4,
+}
+
 const AGE_OF_PARTICIPANTS = [
   { id: '1', label: 'S0 - predškolski uzrast i niži razredi osnovne škole' },
   { id: '2', label: 'S1 - 5. i 6. razred osnovne škole' },
@@ -91,14 +98,12 @@ export default function NewForm() {
     toast({
       title: 'You submitted the following values:',
       description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+        <pre className="mt-2 w-[340px] overflow-y-scroll rounded-md bg-slate-950 p-4">
           <code className="text-white">{JSON.stringify(data, null, 2)}</code>
         </pre>
       ),
     })
   }
-
-  console.log('lecturers', lecturers)
 
   return (
     <Form {...form}>
@@ -274,26 +279,6 @@ export default function NewForm() {
         <br />
 
         {/* potrebna oprema */}
-        <FormField
-          control={form.control}
-          name="equipment"
-          render={() => (
-            <FormItem>
-              <div className="mb-4">
-                <FormLabel className="text-base">Sudionici događanja:</FormLabel>
-                <FormDescription>
-                  Navesti ime i kontakt svih osoba koje su uz voditelja sudionici predavanja / radionice / prezentacije.
-                </FormDescription>
-              </div>
-              <FormControl>
-                <Lecturers lecturers={lecturers} setLecturers={setLecturers} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <br />
-
         <FormField
           control={form.control}
           name="equipment"

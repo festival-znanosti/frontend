@@ -9,15 +9,21 @@ import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 
 export const LecturerSchema = z.object({
-  lecturerName: z.string().min(1, '*'),
-  lecturerLastName: z.string().min(1, '*'),
-  lecturerPhoneNumber: z.string().min(1, '*'),
-  lecturerEmail: z
+  id: z.number().optional(),
+  firstName: z.string().min(1, '*'),
+  lastName: z.string().min(1, '*'),
+  phone: z.string().min(1, '*'),
+  email: z
     .string()
     .min(3, {
       message: '*',
     })
     .email(' ' + 'Koristite valjanu email adresu.'),
+  type: z.number(),
+  resume: z
+    .string()
+    .min(1, '*')
+    .max(800, ' ' + 'Maksimalno 800 znakova.'),
 })
 
 const LecturerArraySchema = z.array(LecturerSchema)
@@ -35,10 +41,12 @@ const Lecturers = ({
   const lecturerForm = useForm<z.infer<typeof LecturerSchema>>({
     resolver: zodResolver(LecturerSchema),
     defaultValues: {
-      lecturerName: '',
-      lecturerLastName: '',
-      lecturerPhoneNumber: '',
-      lecturerEmail: '',
+      firstName: '',
+      lastName: '',
+      phone: '',
+      email: '',
+      type: main ? 0 : 1,
+      resume: 'CV',
     },
   })
 
@@ -47,28 +55,21 @@ const Lecturers = ({
       return
     }
 
-    const isValid = await lecturerForm.trigger([
-      'lecturerName',
-      'lecturerLastName',
-      'lecturerEmail',
-      'lecturerPhoneNumber',
-    ])
+    const isValid = await lecturerForm.trigger(['firstName', 'lastName', 'phone', 'email'])
 
     if (isValid) {
-      const newLecturer = lecturerForm.getValues([
-        'lecturerName',
-        'lecturerLastName',
-        'lecturerEmail',
-        'lecturerPhoneNumber',
-      ])
+      const newLecturer = lecturerForm.getValues(['id', 'firstName', 'lastName', 'phone', 'email', 'type', 'resume'])
 
       setLecturers([
         ...lecturers,
         {
-          lecturerName: newLecturer[0],
-          lecturerLastName: newLecturer[1],
-          lecturerEmail: newLecturer[2],
-          lecturerPhoneNumber: newLecturer[3],
+          id: newLecturer[0],
+          firstName: newLecturer[1],
+          lastName: newLecturer[2],
+          phone: newLecturer[3],
+          email: newLecturer[4],
+          type: newLecturer[5],
+          resume: newLecturer[6],
         },
       ])
 
@@ -88,7 +89,7 @@ const Lecturers = ({
             <div className="flex w-full items-center gap-2">
               <FormField
                 control={lecturerForm.control}
-                name="lecturerName"
+                name="firstName"
                 render={({ field }) => (
                   <FormItem className="w-full">
                     <div className="flex">
@@ -104,7 +105,7 @@ const Lecturers = ({
 
               <FormField
                 control={lecturerForm.control}
-                name="lecturerLastName"
+                name="lastName"
                 render={({ field }) => (
                   <FormItem className="w-full">
                     <div className="flex">
@@ -122,7 +123,7 @@ const Lecturers = ({
             <div className="flex h-full w-full items-center gap-2">
               <FormField
                 control={lecturerForm.control}
-                name="lecturerEmail"
+                name="email"
                 render={({ field }) => (
                   <FormItem className="w-full">
                     <div className="flex">
@@ -138,7 +139,7 @@ const Lecturers = ({
 
               <FormField
                 control={lecturerForm.control}
-                name="lecturerPhoneNumber"
+                name="phone"
                 render={({ field }) => (
                   <FormItem className="w-full">
                     <div className="flex">
@@ -154,7 +155,8 @@ const Lecturers = ({
 
               <div className="flex h-[62px] items-end ">
                 <Button onClick={addLecturer} type="button" disabled={main && lecturers.length === 1}>
-                  Dodaj sudionika
+                  <p className="hidden md:block">Dodaj sudionika</p>
+                  <p className="block md:hidden">Dodaj</p>
                 </Button>
               </div>
             </div>
@@ -175,10 +177,10 @@ const Lecturers = ({
           {lecturers.map((lecturer, index) => (
             <TableRow key={index}>
               <TableCell className="font-medium">
-                {lecturer.lecturerName} {lecturer.lecturerLastName}
+                {lecturer.firstName} {lecturer.lastName}
               </TableCell>
-              <TableCell>{lecturer.lecturerEmail}</TableCell>
-              <TableCell>{lecturer.lecturerPhoneNumber}</TableCell>
+              <TableCell>{lecturer.email}</TableCell>
+              <TableCell>{lecturer.phone}</TableCell>
               <TableCell className="text-right">
                 <Button type="button" onClick={() => removeLecturer(index)} className="px-2">
                   <X />

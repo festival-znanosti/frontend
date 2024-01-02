@@ -42,7 +42,7 @@ const EventFormSchema = z
     }),
     visitorsCount: z.coerce.number().positive('Broj posjetitelja mora biti veći od 0'),
     mainLecturer: z.array(LecturerSchema).length(1, 'Morate dodati glavnog sudionika'),
-    lecturers: z.array(LecturerSchema).min(1, 'Dodajte barem jednog sudionika'),
+    lecturers: z.array(LecturerSchema),
     equipment: z.string().min(1, 'Navedite što je potrebno i ako postoje kakve napomene.'),
   })
   .refine((data) => !isNaN(data.visitorsCount), {

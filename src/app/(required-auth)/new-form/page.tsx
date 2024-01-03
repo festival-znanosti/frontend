@@ -24,14 +24,6 @@ enum EventType {
   Izložba = 4,
 }
 
-// const AGE_OF_PARTICIPANTS = [
-//   { id: '1', label: 'S0 - predškolski uzrast i niži razredi osnovne škole' },
-//   { id: '2', label: 'S1 - 5. i 6. razred osnovne škole' },
-//   { id: '3', label: 'S2 - 7. i 8. razred osnovne škole, 1. razred srednje škole' },
-//   { id: '4', label: 'S3 - 2., 3. i 4. razred srednje škole' },
-//   { id: '5', label: 'PP - djeca s posebnim potrebama' },
-// ] as const // I will delete this one
-
 const ParticipantsAges = [
   { id: '1', label: 'S0', age: 'predškolski uzrast i niži razredi osnovne škole' },
   { id: '2', label: 'S1', age: '5. i 6. razred osnovne škole' },
@@ -40,22 +32,23 @@ const ParticipantsAges = [
   { id: '5', label: 'PP', age: 'djeca s posebnim potrebama' },
 ] as const // this one is new
 
-const ParticipantAgeSchema = z.object({
-  id: z.string(),
-  label: z.string(),
-  age: z.string(),
-})
-
 const EventFormSchema = z
   .object({
     title: z.string().min(1, 'Naziv događanja je obavezan'),
-    type: z.coerce.number(),
-    // .min(1, 'Vrsta događanja je obavezna'),
-    participantsAges: z.array(ParticipantAgeSchema).min(1, 'Odaberite barem jedan uzrast'),
+    type: z.nativeEnum(EventType, { required_error: 'Odaberite vrstu događanja' }),
+    participantsAges: z
+      .array(
+        z.object({
+          id: z.string(),
+          label: z.string(),
+          age: z.string(),
+        })
+      )
+      .min(1, 'Odaberite barem jedan uzrast'),
     visitorsCount: z.coerce.number().positive('Broj posjetitelja mora biti veći od 0'),
     mainLecturer: z.array(LecturerSchema).length(1, 'Morate dodati glavnog sudionika'),
     lecturers: z.array(LecturerSchema),
-    equipment: z.string().min(1, 'Navedite što je potrebno i ako postoje kakve napomene.'),
+    equipment: z.string().optional(),
   })
   .refine((data) => !isNaN(data.visitorsCount), {
     message: 'Broj posjetitelja mora biti broj',

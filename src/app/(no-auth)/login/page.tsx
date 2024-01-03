@@ -43,23 +43,19 @@ export default function Login() {
     },
 
     onSuccess(response) {
-      if (response?.status === 'success') {
-        toast({
-          title: 'Uspjesno ste se ulogirali!',
-          description: response.message,
-        })
-        router.push('/new-form')
-      }
+      toast({
+        title: 'Uspjesno ste se ulogirali!',
+        description: response.message,
+      })
+      router.push('/new-form')
     },
 
     onError(error) {
-      if (error?.message) {
-        toast({
-          title: 'Greška',
-          description: error.message,
-          variant: 'destructive',
-        })
-      }
+      toast({
+        title: 'Greška',
+        description: error.message,
+        variant: 'destructive',
+      })
     },
   })
 

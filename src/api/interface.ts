@@ -27,3 +27,12 @@ export type SelfResponse = {
   email: string
   role: number
 }
+
+type Location = {
+  id: number
+  name: string
+  parentLocationId: number | null
+  parentLocationName: string | null
+}
+
+export type GetAllParentLocationsResponse = Array<Location>

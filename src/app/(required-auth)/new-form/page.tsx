@@ -8,6 +8,7 @@ import { z } from 'zod'
 
 import Calendar from '@/components/random/Calendar/Calendar'
 import Lecturers, { LecturerArrayType, LecturerSchema } from '@/components/random/Lecturers/Lecturers'
+import Location from '@/components/random/Location/Location'
 import PageTitle from '@/components/random/PageTitle'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -36,6 +37,7 @@ const EventFormSchema = z
   .object({
     title: z.string().min(1, 'Naziv događanja je obavezan'),
     type: z.nativeEnum(EventType, { required_error: 'Odaberite vrstu događanja' }),
+    locationId: z.coerce.number({ required_error: 'Odaberite lokaciju događanja' }),
     participantsAges: z
       .array(
         z.object({
@@ -67,6 +69,7 @@ export default function NewForm() {
     defaultValues: {
       title: '',
       type: undefined,
+      locationId: undefined,
       participantsAges: [],
       visitorsCount: undefined,
       lecturers: [],
@@ -104,7 +107,6 @@ export default function NewForm() {
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <PageTitle title="Obrazac za prijavu" description="Unesite informacije vezane uz dogadaj" />
         <br />
-
         <FormField
           control={form.control}
           name="title"
@@ -123,7 +125,6 @@ export default function NewForm() {
             </FormItem>
           )}
         />
-
         <FormField
           control={form.control}
           name="type"
@@ -174,6 +175,25 @@ export default function NewForm() {
           )}
         />
 
+        <br />
+        {/* Location*/}
+        {/* <FormField
+          control={form.control}
+          name="locationId"
+          render={({ field }) => (
+            <FormItem>
+              <div className="mb-4">
+                <FormLabel className="text-base">Lokacija događaja:</FormLabel>
+                <FormDescription>izaberite to be done....</FormDescription>
+              </div>
+              <FormControl>
+                <Location onChange={field.onChange} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        /> */}
+
         <FormField
           control={form.control}
           name="participantsAges"
@@ -211,7 +231,6 @@ export default function NewForm() {
             </FormItem>
           )}
         />
-
         <FormField
           control={form.control}
           name="visitorsCount"
@@ -239,7 +258,6 @@ export default function NewForm() {
           )}
         />
         <br />
-
         {/* glavni sudionik */}
         <FormField
           control={form.control}
@@ -260,7 +278,6 @@ export default function NewForm() {
           )}
         />
         <br />
-
         {/* ostali sudionici */}
         <FormField
           control={form.control}
@@ -281,7 +298,6 @@ export default function NewForm() {
           )}
         />
         <br />
-
         {/* potrebna oprema */}
         <FormField
           control={form.control}
@@ -306,10 +322,8 @@ export default function NewForm() {
           )}
         />
         <br />
-
         <Calendar />
         <br />
-
         <Button type="submit" className="mt-6">
           Predaj
         </Button>

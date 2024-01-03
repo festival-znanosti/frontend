@@ -61,23 +61,19 @@ export default function Register() {
     },
 
     onSuccess(response) {
-      if (response?.status === 'success') {
-        toast({
-          title: 'Uspjesno ste se registriali!',
-          description: response.message,
-        })
-        router.push('/login')
-      }
+      toast({
+        title: 'Uspjeh!',
+        description: response.message,
+      })
+      router.push('/login')
     },
 
     onError(error) {
-      if (error?.message) {
-        toast({
-          title: 'Greška',
-          description: error.message,
-          variant: 'destructive',
-        })
-      }
+      toast({
+        title: 'Greška',
+        description: error.message,
+        variant: 'destructive',
+      })
     },
   })
 

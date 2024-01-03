@@ -5,6 +5,8 @@ export const AUTH_BASE_URL = `${BASE_URL}/Auth` as const
 
 export const REGISTER_ROUTE = () => `${AUTH_BASE_URL}/Register` as const
 export const LOGIN_ROUTE = () => `${AUTH_BASE_URL}/Login` as const
+
+// nije istestirano
 export const LOGOUT_ROUTE = () => `${AUTH_BASE_URL}/Logout` as const
 export const SELF_ROUTE = () => `${BASE_URL}/Account/Details` as const
 
@@ -30,10 +32,10 @@ export const SELF_ROUTE = () => `${BASE_URL}/Account/Details` as const
 // export const EVENT_SUMMARY_ROUTE = () => `${FILES_BASE_URL}/EventSummary` as const
 // export const FESTIVAL_TABLE_ROUTE = () => `${FILES_BASE_URL}/FestivalTable` as const
 
-// // Location
-// export const LOCATION_BASE_URL = `${BASE_URL}/api/Location` as const
+// Location
+export const LOCATION_BASE_URL = `${BASE_URL}/api/Location` as const
 
-// export const GET_PARENT_LOCATIONS_ROUTE = () => `${LOCATION_BASE_URL}/ParentLocations` as const
+export const GET_ALL_PARENT_LOCATIONS_ROUTE = () => `${LOCATION_BASE_URL}/ParentLocations` as const
 // export const GET_CHILD_LOCATIONS_ROUTE = (parentLocationID: number) =>
 //   `${LOCATION_BASE_URL}/ChildLocations?${parentLocationID}` as const
 // export const CREATE_PARENT_LOCATION_ROUTE = () => `${LOCATION_BASE_URL}/Parent/Create` as const

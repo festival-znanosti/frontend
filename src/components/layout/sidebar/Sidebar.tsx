@@ -46,7 +46,7 @@ const Sidebar = () => {
   }, [pathname])
 
   return (
-    <aside className="relative left-0 top-0 hidden h-full w-[220px] flex-col border-r-[1px] bg-zinc-200 dark:bg-gray-800  sm:flex">
+    <aside className="hidden h-full w-[220px] flex-col border-r-[1px] bg-zinc-200 dark:bg-gray-800  sm:flex">
       <div className="px-10 py-10">
         <a href="/">
           <div className="flex items-center justify-center">

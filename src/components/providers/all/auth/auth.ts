@@ -12,11 +12,7 @@ export const fetchSelf = async (authToken: string | null) => {
 
     const response = await auth()
 
-    if (response?.status === 'success') {
-      return response.data
-    }
-
-    return null
+    return response
   } catch (error) {
     console.error('Fetch error:', error)
     return null

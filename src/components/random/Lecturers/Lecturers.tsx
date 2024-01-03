@@ -84,84 +84,82 @@ const Lecturers = ({
   return (
     <>
       <Form {...lecturerForm}>
-        <form className="w-full">
-          <div className="flex w-full flex-col items-center gap-4">
-            <div className="flex w-full items-center gap-2">
-              <FormField
-                control={lecturerForm.control}
-                name="firstName"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <div className="flex">
-                      <FormLabel htmlFor="firstName">Ime</FormLabel>
-                      <FormMessage className="text-sm font-medium leading-none" />
-                    </div>
-                    <FormControl>
-                      <Input id="firstName" placeholder="Ivan" {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+        <div className="flex w-full flex-col items-center gap-4">
+          <div className="flex w-full items-center gap-2">
+            <FormField
+              control={lecturerForm.control}
+              name="firstName"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <div className="flex">
+                    <FormLabel htmlFor="firstName">Ime</FormLabel>
+                    <FormMessage className="text-sm font-medium leading-none" />
+                  </div>
+                  <FormControl>
+                    <Input id="firstName" placeholder="Ivan" {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
 
-              <FormField
-                control={lecturerForm.control}
-                name="lastName"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <div className="flex">
-                      <FormLabel htmlFor="lecturerLastName">Prezime</FormLabel>
-                      <FormMessage className="text-sm font-medium leading-none" />
-                    </div>
-                    <FormControl>
-                      <Input id="lecturerLastName" placeholder="Horvat" {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            </div>
+            <FormField
+              control={lecturerForm.control}
+              name="lastName"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <div className="flex">
+                    <FormLabel htmlFor="lecturerLastName">Prezime</FormLabel>
+                    <FormMessage className="text-sm font-medium leading-none" />
+                  </div>
+                  <FormControl>
+                    <Input id="lecturerLastName" placeholder="Horvat" {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
 
-            <div className="flex h-full w-full items-center gap-2">
-              <FormField
-                control={lecturerForm.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <div className="flex">
-                      <FormLabel htmlFor="lecturerEmail">E-mail</FormLabel>
-                      <FormMessage className="text-sm font-medium leading-none" />
-                    </div>
-                    <FormControl>
-                      <Input id="lecturerEmail" placeholder="ivan.horvat@gmail.com" type="email" {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+          <div className="flex h-full w-full items-center gap-2">
+            <FormField
+              control={lecturerForm.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <div className="flex">
+                    <FormLabel htmlFor="lecturerEmail">E-mail</FormLabel>
+                    <FormMessage className="text-sm font-medium leading-none" />
+                  </div>
+                  <FormControl>
+                    <Input id="lecturerEmail" placeholder="ivan.horvat@gmail.com" type="email" {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
 
-              <FormField
-                control={lecturerForm.control}
-                name="phone"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <div className="flex">
-                      <FormLabel htmlFor="lecturerPhoneNumber">Broj mobitela</FormLabel>
-                      <FormMessage className="text-sm font-medium leading-none" />
-                    </div>
-                    <FormControl>
-                      <Input id="lecturerPhoneNumber" placeholder="+385 91 9186 976" type="tel" {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+            <FormField
+              control={lecturerForm.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <div className="flex">
+                    <FormLabel htmlFor="lecturerPhoneNumber">Broj mobitela</FormLabel>
+                    <FormMessage className="text-sm font-medium leading-none" />
+                  </div>
+                  <FormControl>
+                    <Input id="lecturerPhoneNumber" placeholder="+385 91 9186 976" type="tel" {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
 
-              <div className="flex h-[62px] items-end ">
-                <Button onClick={addLecturer} type="button" disabled={main && lecturers.length === 1}>
-                  <p className="hidden md:block">Dodaj sudionika</p>
-                  <p className="block md:hidden">Dodaj</p>
-                </Button>
-              </div>
+            <div className="flex h-[62px] items-end ">
+              <Button onClick={addLecturer} type="button" disabled={main && lecturers.length === 1}>
+                <p className="hidden md:block">Dodaj sudionika</p>
+                <p className="block md:hidden">Dodaj</p>
+              </Button>
             </div>
           </div>
-        </form>
+        </div>
       </Form>
 
       <Table className="mt-6">

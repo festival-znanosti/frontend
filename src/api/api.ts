@@ -25,32 +25,15 @@ export type BaseJsonOptions = RequestInit & {
   authToken?: string | null
 }
 
-export type ApiResponse<TData = unknown> =
-  | {
-      status: 'error'
-      message: string
-    }
-  | {
-      status: 'success'
-      message: string
-      data: TData
-    }
+async function handleResponse<TData>(res: Response) {
+  const data: TData = await res.json()
 
-async function handleResponse<TData>(res: Response): Promise<ApiResponse<TData>> {
-  const data = await res.json()
-
-  if (res.ok) {
-    return {
-      status: 'success',
-      message: data?.message ?? '',
-      data,
-    }
+  if (!res.ok) {
+    // @ts-ignore
+    throw new Error(data.message)
   }
 
-  return {
-    status: 'error',
-    message: data?.message ?? '',
-  }
+  return data
 }
 
 async function sendRequest<TData>(
@@ -58,7 +41,7 @@ async function sendRequest<TData>(
   method: string,
   body = {},
   options: BaseJsonOptions = {}
-): Promise<ApiResponse<TData>> {
+): Promise<TData> {
   const { ...fetchOptions } = options
 
   const headers = options?.headers ?? {}
@@ -82,14 +65,10 @@ async function sendRequest<TData>(
     },
   })
 
-  return await handleResponse<TData>(res)
+  return await handleResponse(res)
 }
 
-async function sendRequestNoBody<TData>(
-  url: string,
-  method: string,
-  options: BaseJsonOptions = {}
-): Promise<ApiResponse<TData>> {
+async function sendRequestNoBody<TData>(url: string, method: string, options: BaseJsonOptions = {}): Promise<TData> {
   const { ...fetchOptions } = options
 
   const headers = options?.headers ?? {}
@@ -112,7 +91,7 @@ async function sendRequestNoBody<TData>(
     },
   })
 
-  return await handleResponse<TData>(res)
+  return await handleResponse(res)
 }
 
 export const getJson = async <TData>(url: string, options: BaseJsonOptions = {}) =>

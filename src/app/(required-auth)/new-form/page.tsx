@@ -24,22 +24,34 @@ enum EventType {
   Izložba = 4,
 }
 
-const AGE_OF_PARTICIPANTS = [
-  { id: '1', label: 'S0 - predškolski uzrast i niži razredi osnovne škole' },
-  { id: '2', label: 'S1 - 5. i 6. razred osnovne škole' },
-  { id: '3', label: 'S2 - 7. i 8. razred osnovne škole, 1. razred srednje škole' },
-  { id: '4', label: 'S3 - 2., 3. i 4. razred srednje škole' },
-  { id: '5', label: 'PP - djeca s posebnim potrebama' },
-] as const
+// const AGE_OF_PARTICIPANTS = [
+//   { id: '1', label: 'S0 - predškolski uzrast i niži razredi osnovne škole' },
+//   { id: '2', label: 'S1 - 5. i 6. razred osnovne škole' },
+//   { id: '3', label: 'S2 - 7. i 8. razred osnovne škole, 1. razred srednje škole' },
+//   { id: '4', label: 'S3 - 2., 3. i 4. razred srednje škole' },
+//   { id: '5', label: 'PP - djeca s posebnim potrebama' },
+// ] as const // I will delete this one
+
+const ParticipantsAges = [
+  { id: '1', label: 'S0', age: 'predškolski uzrast i niži razredi osnovne škole' },
+  { id: '2', label: 'S1', age: '5. i 6. razred osnovne škole' },
+  { id: '3', label: 'S2', age: '7. i 8. razred osnovne škole, 1. razred srednje škole' },
+  { id: '4', label: 'S3', age: '2., 3. i 4. razred srednje škole' },
+  { id: '5', label: 'PP', age: 'djeca s posebnim potrebama' },
+] as const // this one is new
+
+const ParticipantAgeSchema = z.object({
+  id: z.string(),
+  label: z.string(),
+  age: z.string(),
+})
 
 const EventFormSchema = z
   .object({
     title: z.string().min(1, 'Naziv događanja je obavezan'),
     type: z.coerce.number(),
     // .min(1, 'Vrsta događanja je obavezna'),
-    participantsAges: z.array(z.string()).refine((value) => value.some((item) => item), {
-      message: 'Odaberite barem jedan uzrast',
-    }),
+    participantsAges: z.array(ParticipantAgeSchema).min(1, 'Odaberite barem jedan uzrast'),
     visitorsCount: z.coerce.number().positive('Broj posjetitelja mora biti veći od 0'),
     mainLecturer: z.array(LecturerSchema).length(1, 'Morate dodati glavnog sudionika'),
     lecturers: z.array(LecturerSchema),
@@ -148,15 +160,13 @@ export default function NewForm() {
                 defaultValue={form.getValues('type') as unknown as string}
               >
                 <FormControl>
-                  <div className="flex items-center gap-4">
-                    <div className="w-[400px]">
-                      <SelectTrigger className="w-[400px]">
-                        <SelectValue placeholder="Odaberite" />
-                      </SelectTrigger>
-                    </div>
-                    {/* <p>{Object(EventType)[form.getValues('type')]}</p> */}
-                    {/* <p>{form.getValues('type')}</p> */}
-                  </div>
+                  {/* <div className="flex items-center gap-4"> */}
+                  <SelectTrigger className="w-full md:w-[400px]">
+                    <SelectValue placeholder="Odaberite" />
+                  </SelectTrigger>
+                  {/* <p>{Object(EventType)[form.getValues('type')]}</p> */}
+                  {/* <p>{form.getValues('type')}</p> */}
+                  {/* </div> */}
                 </FormControl>
                 <SelectContent>
                   <SelectViewport className="rounded-md border bg-background">
@@ -184,7 +194,7 @@ export default function NewForm() {
                 <FormLabel className="text-base">Uzrast sudionika</FormLabel>
                 <FormDescription>Odaberite sve uzraste prikladne za Vaš događaj</FormDescription>
               </div>
-              {AGE_OF_PARTICIPANTS.map((age) => (
+              {ParticipantsAges.map((age) => (
                 <FormField
                   key={age.id}
                   control={form.control}
@@ -194,15 +204,15 @@ export default function NewForm() {
                       <FormItem key={age.id} className="flex flex-row items-start space-x-3 space-y-0">
                         <FormControl>
                           <Checkbox
-                            checked={field.value?.includes(age.id)}
+                            checked={field.value.some((a) => a.id === age.id)}
                             onCheckedChange={(checked) => {
                               return checked
-                                ? field.onChange([...field.value, age.id])
-                                : field.onChange(field.value?.filter((value) => value !== age.id))
+                                ? field.onChange([...field.value, age])
+                                : field.onChange(field.value.filter((value) => value.id !== age.id))
                             }}
                           />
                         </FormControl>
-                        <FormLabel className="font-normal">{age.label}</FormLabel>
+                        <FormLabel className="font-normal">{`${age.label} - ${age.age}`}</FormLabel>
                       </FormItem>
                     )
                   }}

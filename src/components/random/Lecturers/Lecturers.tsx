@@ -77,8 +77,8 @@ const Lecturers = ({
     }
   }
 
-  const removeLecturer = (index: number) => {
-    setLecturers(lecturers.filter((_, idx) => idx !== index))
+  const removeLecturer = (lecturer: z.infer<typeof LecturerSchema>) => {
+    setLecturers(lecturers.filter((lec, _) => lec !== lecturer))
   }
 
   return (
@@ -174,20 +174,22 @@ const Lecturers = ({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {lecturers.map((lecturer, index) => (
-            <TableRow key={index}>
-              <TableCell className="font-medium">
-                {lecturer.firstName} {lecturer.lastName}
-              </TableCell>
-              <TableCell>{lecturer.email}</TableCell>
-              <TableCell>{lecturer.phone}</TableCell>
-              <TableCell className="text-right">
-                <Button type="button" onClick={() => removeLecturer(index)} className="px-2">
-                  <X />
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))}
+          {lecturers
+            .filter((lec) => lec.type === (main ? 0 : 1))
+            .map((lecturer, index) => (
+              <TableRow key={index}>
+                <TableCell className="font-medium">
+                  {lecturer.firstName} {lecturer.lastName}
+                </TableCell>
+                <TableCell>{lecturer.email}</TableCell>
+                <TableCell>{lecturer.phone}</TableCell>
+                <TableCell className="text-right">
+                  <Button type="button" onClick={() => removeLecturer(lecturer)} className="px-2">
+                    <X />
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
         </TableBody>
       </Table>
     </>

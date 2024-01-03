@@ -51,9 +51,11 @@ const EventFormSchema = z
         invalid_type_error: 'Broj posjetitelja je obavezan',
       })
       .min(1, 'Broj posjetitelja mora biti veći od 0'),
-    mainLecturer: z.array(LecturerSchema).length(1, 'Morate dodati glavnog sudionika'),
-    lecturers: z.array(LecturerSchema),
+    lecturers: z
+      .array(LecturerSchema)
+      .refine((lecturers) => lecturers.some((lec) => lec.type === 0), 'Morate dodati glavnog sudionika'),
     equipment: z.string().optional(),
+    summary: z.string().optional(),
   })
   .refine((data) => !isNaN(data.visitorsCount), {
     message: 'Broj posjetitelja mora biti broj',
@@ -67,25 +69,14 @@ export default function NewForm() {
       type: undefined,
       participantsAges: [],
       visitorsCount: undefined,
-      mainLecturer: [],
       lecturers: [],
       equipment: '',
+      summary: '',
     },
   })
 
-  const [mainLecturer, setMainLecturer] = useState<LecturerArrayType>([])
   const [lecturers, setLecturers] = useState<LecturerArrayType>([])
   const initialRender = useRef(true)
-
-  useEffect(() => {
-    if (initialRender.current === true) {
-      initialRender.current = false
-      return
-    } else {
-      form.setValue('mainLecturer', mainLecturer)
-      form.trigger(['mainLecturer'])
-    }
-  }, [mainLecturer])
 
   useEffect(() => {
     if (initialRender.current === true) {
@@ -101,8 +92,8 @@ export default function NewForm() {
     toast({
       title: 'You submitted the following values:',
       description: (
-        <pre className="mt-2 w-[340px] overflow-y-scroll rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+        <pre className="mt-2 w-[340px] select-text overflow-scroll rounded-md bg-slate-950 p-4">
+          <code className=" h-full select-text overflow-auto text-white">{JSON.stringify(data, null, 2)}</code>
         </pre>
       ),
     })
@@ -252,7 +243,7 @@ export default function NewForm() {
         {/* glavni sudionik */}
         <FormField
           control={form.control}
-          name="mainLecturer"
+          name="lecturers"
           render={() => (
             <FormItem>
               <div className="mb-4">
@@ -262,7 +253,7 @@ export default function NewForm() {
                 </FormDescription>
               </div>
               <FormControl>
-                <Lecturers lecturers={mainLecturer} setLecturers={setMainLecturer} main={true} />
+                <Lecturers lecturers={lecturers} setLecturers={setLecturers} main={true} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -285,7 +276,7 @@ export default function NewForm() {
               <FormControl>
                 <Lecturers lecturers={lecturers} setLecturers={setLecturers} />
               </FormControl>
-              <FormMessage />
+              {/* <FormMessage /> */}
             </FormItem>
           )}
         />

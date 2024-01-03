@@ -45,7 +45,12 @@ const EventFormSchema = z
         })
       )
       .min(1, 'Odaberite barem jedan uzrast'),
-    visitorsCount: z.coerce.number().positive('Broj posjetitelja mora biti veći od 0'),
+    visitorsCount: z
+      .number({
+        required_error: 'Broj posjetitelja je obavezan',
+        invalid_type_error: 'Broj posjetitelja je obavezan',
+      })
+      .min(1, 'Broj posjetitelja mora biti veći od 0'),
     mainLecturer: z.array(LecturerSchema).length(1, 'Morate dodati glavnog sudionika'),
     lecturers: z.array(LecturerSchema),
     equipment: z.string().optional(),
@@ -230,7 +235,13 @@ export default function NewForm() {
                 </FormDescription>
               </div>
               <FormControl>
-                <Input id="visitorsCount" placeholder="30" {...field} />
+                <Input
+                  id="visitorsCount"
+                  placeholder="30"
+                  type="number"
+                  {...field}
+                  onChange={(e) => field.onChange(parseInt(e.target.value, 10))}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

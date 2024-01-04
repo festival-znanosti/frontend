@@ -8,7 +8,7 @@ import { z } from 'zod'
 
 import Calendar from '@/components/random/Calendar/Calendar'
 import Lecturers, { LecturerArrayType, LecturerSchema } from '@/components/random/Lecturers/Lecturers'
-import Location from '@/components/random/Location/Location'
+// import Location from '@/components/random/Location/Location'
 import PageTitle from '@/components/random/PageTitle'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'

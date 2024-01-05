@@ -11,11 +11,12 @@ import Step3 from './Step3'
 import { EventType } from '../page'
 
 import { LecturerArrayType, LecturerSchema } from '@/components/random/Lecturers/Lecturers'
-import { Wizard, WizardStep, useDescendant, useDescendants, useWizardControls } from '@/components/random/Wizard/Wizard'
+import { Wizard, WizardStep, useDescendants, useWizardControls } from '@/components/random/Wizard/Wizard'
 import { useWizardContext } from '@/components/random/Wizard/Wizard.context'
 import { Button } from '@/components/ui/button'
 import { Form } from '@/components/ui/form'
 import { toast } from '@/components/ui/use-toast'
+import { cn } from '@/lib/utils'
 
 const EventFormSchema = z
   .object({
@@ -48,7 +49,7 @@ const EventFormSchema = z
   })
 
 export const Stepper = ({ trigger }: { trigger: () => Promise<boolean> }) => {
-  const { currentStep } = useWizardContext()
+  const { currentStep, finalStepNumber } = useWizardContext()
   const { goPrevious, goNext } = useWizardControls()
 
   const validateAndGoNext = async () => {
@@ -58,16 +59,14 @@ export const Stepper = ({ trigger }: { trigger: () => Promise<boolean> }) => {
     }
   }
 
-  const descendants = useDescendants()
-  const isFinal = false
-  // currentStep === descendants.count()
+  const isFinal = currentStep === finalStepNumber
 
   return (
     <div className="flex h-10 w-full items-center ">
-      <Button onClick={goPrevious} disabled={currentStep === 0} className="mr-auto">
+      <Button onClick={goPrevious} disabled={currentStep === 0} className={cn('mr-auto', isFinal && 'hidden')}>
         Previous
       </Button>
-      <Button onClick={validateAndGoNext} disabled={isFinal} className="ml-auto">
+      <Button onClick={validateAndGoNext} disabled={isFinal} className={cn('ml-auto', isFinal && 'hidden')}>
         Next
       </Button>
       {isFinal && (

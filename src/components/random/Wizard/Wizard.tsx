@@ -26,10 +26,10 @@ export const useWizardControls = () => {
 export const Wizard = forwardRef<HTMLDivElement, PropsWithChildren<WizardProps<any>>>(
   ({ children, defaultIndex, form, ...rest }, ref) => {
     const descendants = useDescendants()
+    const finalStepNumber = descendants.count() - 1
 
     const [currentStep, setCurrentStep] = useState(defaultIndex ?? 0)
-    // const context = useMemo(() => ({ form, currentStep }), [currentStep, form])
-    const context = { form, currentStep }
+    const context = { form, currentStep, finalStepNumber }
 
     return (
       <div ref={ref} {...rest}>

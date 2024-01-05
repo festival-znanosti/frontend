@@ -149,13 +149,9 @@ export default function NewForm() {
                 defaultValue={form.getValues('type') as unknown as string}
               >
                 <FormControl>
-                  {/* <div className="flex items-center gap-4"> */}
                   <SelectTrigger className="w-full md:w-[400px]">
                     <SelectValue placeholder="Odaberite" />
                   </SelectTrigger>
-                  {/* <p>{Object(EventType)[form.getValues('type')]}</p> */}
-                  {/* <p>{form.getValues('type')}</p> */}
-                  {/* </div> */}
                 </FormControl>
                 <SelectContent>
                   <SelectViewport className="rounded-md border bg-background">

@@ -8,7 +8,6 @@ import { z } from 'zod'
 
 import Calendar from '@/components/random/Calendar/Calendar'
 import Lecturers, { LecturerArrayType, LecturerSchema } from '@/components/random/Lecturers/Lecturers'
-// import Location from '@/components/random/Location/Location'
 import PageTitle from '@/components/random/PageTitle'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -18,7 +17,7 @@ import { Select, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from '@/components/ui/use-toast'
 
-enum EventType {
+export enum EventType {
   Predavanje = 0,
   Prezentacija = 1,
   Radionica = 2,
@@ -31,9 +30,9 @@ const ParticipantsAges = [
   { id: '3', label: 'S2', age: '7. i 8. razred osnovne škole, 1. razred srednje škole' },
   { id: '4', label: 'S3', age: '2., 3. i 4. razred srednje škole' },
   { id: '5', label: 'PP', age: 'djeca s posebnim potrebama' },
-] as const // this one is new
+] as const
 
-const EventFormSchema = z
+export const EventFormSchema = z
   .object({
     title: z.string().min(1, 'Naziv događanja je obavezan'),
     type: z.nativeEnum(EventType, { required_error: 'Odaberite vrstu događanja' }),
@@ -231,6 +230,7 @@ export default function NewForm() {
             </FormItem>
           )}
         />
+
         <FormField
           control={form.control}
           name="visitorsCount"

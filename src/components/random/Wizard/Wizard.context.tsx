@@ -1,24 +1,22 @@
 import { type Dispatch, type SetStateAction, createContext, useContext } from 'react'
+import { FieldValues, UseFormReturn } from 'react-hook-form'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type Data = Record<string, any>
-
-export interface WizardContextValue<TData> {
-  data: TData | undefined
-  setData: Dispatch<SetStateAction<TData | undefined>>
+export interface WizardContextValue<T extends FieldValues> {
+  form: UseFormReturn<T>
   currentStep: number
 }
 
-export const WizardContext = createContext<WizardContextValue<Data> | null>(null)
+// eslint-disable-next-line
+export const WizardContext = createContext<WizardContextValue<any> | null>(null)
 
-export function useWizardContext<TData>(): WizardContextValue<TData> {
+export function useWizardContext<T extends FieldValues>(): WizardContextValue<T> {
   const context = useContext(WizardContext)
 
   if (!context) {
     throw new Error('useWizardContext must be used within a WizardContextProvider')
   }
 
-  return context as WizardContextValue<TData>
+  return context as WizardContextValue<T>
 }
 
 export const WizardControlsContext = createContext<Dispatch<SetStateAction<number>> | null>(null)

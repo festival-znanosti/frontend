@@ -1,17 +1,15 @@
 import { createDescendantContext } from '@chakra-ui/descendant'
 import { HTMLProps, type PropsWithChildren, forwardRef, useCallback, useMemo, useState } from 'react'
+import { FieldValues, UseFormReturn } from 'react-hook-form'
 
-import {
-  type Data,
-  WizardContext,
-  WizardControlsContext,
-  useWizardContext,
-  useWizardControlsContext,
-} from './Wizard.context'
+import { WizardContext, WizardControlsContext, useWizardContext, useWizardControlsContext } from './Wizard.context'
 
-export interface WizardProps extends HTMLProps<HTMLDivElement> {
+export interface WizardCustomProps<T extends FieldValues> {
+  form: UseFormReturn<T>
   defaultIndex?: number
 }
+
+export type WizardProps<T extends FieldValues> = WizardCustomProps<T> & Omit<HTMLProps<HTMLDivElement>, 'form'>
 
 export const [DescendantsProvider, , useDescendants, useDescendant] = createDescendantContext()
 
@@ -24,14 +22,14 @@ export const useWizardControls = () => {
   }
 }
 
-export const Wizard = forwardRef<HTMLDivElement, PropsWithChildren<WizardProps>>(
-  ({ children, defaultIndex, ...rest }, ref) => {
-    const [data, setData] = useState<Data>()
-
+// eslint-disable-next-line
+export const Wizard = forwardRef<HTMLDivElement, PropsWithChildren<WizardProps<any>>>(
+  ({ children, defaultIndex, form, ...rest }, ref) => {
     const descendants = useDescendants()
 
     const [currentStep, setCurrentStep] = useState(defaultIndex ?? 0)
-    const context = useMemo(() => ({ data, setData, currentStep }), [currentStep, data])
+    // const context = useMemo(() => ({ form, currentStep }), [currentStep, form])
+    const context = { form, currentStep }
 
     return (
       <div ref={ref} {...rest}>
@@ -53,8 +51,6 @@ export const WizardStep = ({ children }: PropsWithChildren<WizardStepProps>) => 
   const { register, index } = useDescendant()
 
   const isActive = index === currentStep
-
-  console.log(index, currentStep)
 
   return (
     <div ref={register} hidden={!isActive}>

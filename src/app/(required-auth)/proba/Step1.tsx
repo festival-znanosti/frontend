@@ -2,7 +2,7 @@
 
 import { SelectContent, SelectViewport } from '@radix-ui/react-select'
 
-import { EventType } from '../page'
+import { EventType } from '../new-form/page'
 
 import PageTitle from '@/components/random/PageTitle'
 import { useWizardContext } from '@/components/random/Wizard/Wizard.context'

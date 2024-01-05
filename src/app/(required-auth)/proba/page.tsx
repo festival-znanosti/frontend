@@ -1,12 +1,13 @@
 'use client'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
-import { Stepper } from '../new-form/a/page'
-
-import { Wizard, WizardStep } from '@/components/random/Wizard/Wizard'
+import Stepper from '@/components/random/Wizard/Stepper'
+import { Wizard, WizardStep, useWizardControls } from '@/components/random/Wizard/Wizard'
 import { useWizardContext } from '@/components/random/Wizard/Wizard.context'
+import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { toast } from '@/components/ui/use-toast'

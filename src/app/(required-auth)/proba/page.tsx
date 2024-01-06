@@ -1,133 +1,89 @@
 'use client'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
-import Stepper from '@/components/random/Wizard/Stepper'
+import { LecturerArrayType, LecturerSchema } from '@/components/random/Lecturers/Lecturers'
+import Step1, { EventType } from '@/components/random/Wizard/Steps/Step1'
+import Step2 from '@/components/random/Wizard/Steps/Step2'
+import Step3 from '@/components/random/Wizard/Steps/Step3'
+import Step4 from '@/components/random/Wizard/Steps/Step4'
 import { Wizard, WizardStep } from '@/components/random/Wizard/Wizard'
-import { useWizardContext } from '@/components/random/Wizard/Wizard.context'
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
+import { Form } from '@/components/ui/form'
 import { toast } from '@/components/ui/use-toast'
-import { cn } from '@/lib/utils'
 
-const steps = ['Step1', 'Step2', 'Step3'] as const
-
-const UserFormSchema = z.object({
-  firstname: z.string().min(1, 'First name is required'),
-  lastname: z.string().min(1, 'Last name is required'),
-  age: z.string().min(1, 'Age is required'),
-})
-
-const Step1 = () => {
-  const { form } = useWizardContext<z.infer<typeof UserFormSchema>>()
-
-  return (
-    <div className="flex flex-col gap-4">
-      <FormField
-        control={form.control}
-        name="firstname"
-        render={({ field }) => (
-          <FormItem>
-            <div className="mb-4">
-              <FormLabel className="text-base" htmlFor="firstname">
-                Ime
-              </FormLabel>
-              <FormDescription>Upišite ime</FormDescription>
-            </div>
-            <FormControl>
-              <Input id="firstname" placeholder="Petar" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <Stepper trigger={() => form.trigger(['firstname'])} />
-    </div>
-  )
-}
-
-const Step2 = () => {
-  const { form } = useWizardContext<z.infer<typeof UserFormSchema>>()
-
-  return (
-    <div className="flex flex-col gap-4">
-      <FormField
-        control={form.control}
-        name="lastname"
-        render={({ field }) => (
-          <FormItem>
-            <div className="mb-4">
-              <FormLabel className="text-base" htmlFor="lastname">
-                Prezime
-              </FormLabel>
-              <FormDescription>Upišite prezime</FormDescription>
-            </div>
-            <FormControl>
-              <Input id="lastname" placeholder="Peric" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <Stepper trigger={() => form.trigger(['lastname'])} />
-    </div>
-  )
-}
-
-const Step3 = () => {
-  const { form } = useWizardContext<z.infer<typeof UserFormSchema>>()
-
-  return (
-    <div className="flex flex-col gap-4">
-      <FormField
-        control={form.control}
-        name="age"
-        render={({ field }) => (
-          <FormItem>
-            <div className="mb-4">
-              <FormLabel className="text-base" htmlFor="age">
-                Godine
-              </FormLabel>
-              <FormDescription>Upišite godine</FormDescription>
-            </div>
-            <FormControl>
-              <Input id="age" placeholder="10" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <Stepper trigger={() => form.trigger(['age'])} />
-    </div>
-  )
-}
-
-const StepCount = () => {
-  const { currentStep } = useWizardContext()
-
-  return (
-    <div className="flex gap-3">
-      {steps.map((step) => (
-        <div key={step} className={cn(steps[currentStep] === step ? 'text-green-500' : 'text-red-500')}>
-          {step}
-        </div>
-      ))}
-    </div>
-  )
-}
+export const EventFormSchema = z
+  .object({
+    title: z.string().min(1, 'Naziv događanja je obavezan'),
+    type: z.nativeEnum(EventType, { required_error: 'Odaberite vrstu događanja' }),
+    locationId: z.coerce.number({ required_error: 'Odaberite lokaciju događanja' }),
+    participantsAges: z
+      .array(
+        z.object({
+          id: z.string(),
+          label: z.string(),
+          age: z.string(),
+        })
+      )
+      .min(1, 'Odaberite barem jedan uzrast'),
+    visitorsCount: z
+      .number({
+        required_error: 'Broj posjetitelja je obavezan',
+        invalid_type_error: 'Broj posjetitelja je obavezan',
+      })
+      .min(1, 'Broj posjetitelja mora biti veći od 0'),
+    lecturers: z
+      .array(LecturerSchema)
+      .refine((lecturers) => lecturers.some((lec) => lec.type === 0), 'Morate dodati glavnog sudionika'),
+    equipment: z.string().optional(),
+    summary: z.string().optional(),
+  })
+  .refine((data) => !isNaN(data.visitorsCount), {
+    message: 'Broj posjetitelja mora biti broj',
+  })
 
 const Page = () => {
-  const form = useForm<z.infer<typeof UserFormSchema>>({
-    resolver: zodResolver(UserFormSchema),
+  const form = useForm<z.infer<typeof EventFormSchema>>({
+    resolver: zodResolver(EventFormSchema),
     defaultValues: {
-      firstname: '',
-      lastname: '',
-      age: '',
+      title: '',
+      type: undefined,
+      locationId: undefined,
+      participantsAges: [],
+      visitorsCount: undefined,
+      lecturers: [],
+      equipment: '',
+      summary: '',
     },
   })
 
-  function onSubmit(data: z.infer<typeof UserFormSchema>) {
+  const [lecturers, setLecturers] = useState<LecturerArrayType>([])
+  // const initialRender = useRef(true)
+
+  // useEffect(() => {
+  //   if (initialRender.current === true) {
+  //     initialRender.current = false
+  //     return
+  //   } else {
+  //     form.setValue('lecturers', lecturers)
+  //     form.trigger(['lecturers'])
+  //   }
+  // }, [lecturers])
+
+  const [firstRender, setFirstRender] = useState(true)
+
+  useEffect(() => {
+    if (firstRender) {
+      setFirstRender(false)
+      return
+    } else {
+      form.setValue('lecturers', lecturers)
+      form.trigger(['lecturers'])
+    }
+  }, [lecturers])
+
+  function onSubmit(data: z.infer<typeof EventFormSchema>) {
     toast({
       title: 'You submitted the following values:',
       description: (
@@ -137,25 +93,26 @@ const Page = () => {
       ),
     })
   }
+
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <Wizard form={form}>
-          <StepCount />
+    <Wizard form={form}>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="flex h-max min-h-full flex-1 flex-col">
           <WizardStep>
             <Step1 />
           </WizardStep>
-          <WizardStep>
+          {/* <WizardStep>
             <Step2 />
+          </WizardStep> */}
+          <WizardStep>
+            <Step3 lecturers={lecturers} setLecturers={setLecturers} />
           </WizardStep>
           <WizardStep>
-            <Step3 />
+            <Step4 />
           </WizardStep>
-        </Wizard>
-
-        <div>{JSON.stringify(form.getValues(), null, 2)}</div>
-      </form>
-    </Form>
+        </form>
+      </Form>
+    </Wizard>
   )
 }
 

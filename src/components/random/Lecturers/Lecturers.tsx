@@ -188,6 +188,20 @@ const Lecturers = ({
                 </TableCell>
               </TableRow>
             ))}
+
+          {lecturers.length === 0 && (
+            <TableRow>
+              {main ? (
+                <TableCell colSpan={4} className="text-center">
+                  Nema voditelja
+                </TableCell>
+              ) : (
+                <TableCell colSpan={4} className="text-center">
+                  Nema dodanih sudionika
+                </TableCell>
+              )}
+            </TableRow>
+          )}
         </TableBody>
       </Table>
     </>

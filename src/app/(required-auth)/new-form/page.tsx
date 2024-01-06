@@ -106,6 +106,7 @@ export default function NewForm() {
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <PageTitle title="Obrazac za prijavu" description="Unesite informacije vezane uz dogadaj" />
         <br />
+
         <FormField
           control={form.control}
           name="title"
@@ -124,11 +125,12 @@ export default function NewForm() {
             </FormItem>
           )}
         />
+        <br />
         <FormField
           control={form.control}
           name="type"
           render={({ field }) => (
-            <FormItem className="mt-6">
+            <FormItem>
               <div className="mb-4">
                 <FormLabel className="text-base" htmlFor="type">
                   Vrsta događanja

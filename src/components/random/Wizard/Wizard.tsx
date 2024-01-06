@@ -32,7 +32,11 @@ export const Wizard = forwardRef<HTMLDivElement, PropsWithChildren<WizardProps<a
     const context = { form, currentStep, finalStepNumber }
 
     return (
-      <div ref={ref} {...rest}>
+      <div
+        ref={ref}
+        {...rest}
+        className="flex h-max min-h-full w-full flex-col [&>form>div]:flex [&>form>div]:min-h-full [&>form>div]:flex-1 [&>form>div]:flex-col"
+      >
         <WizardContext.Provider value={context}>
           <WizardControlsContext.Provider value={setCurrentStep}>
             <DescendantsProvider value={descendants}>{children}</DescendantsProvider>

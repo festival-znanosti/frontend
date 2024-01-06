@@ -22,7 +22,7 @@ const Stepper = ({ trigger }: { trigger: () => Promise<boolean> }) => {
   const progress = (currentStep / (finalStepNumber + 1)) * 100
 
   return (
-    <div className="flex h-10 w-full items-center justify-center gap-4 sm:gap-10">
+    <div className="mt-auto flex h-10 w-full items-center justify-center gap-4 sm:gap-10">
       <Button onClick={goPrevious} disabled={currentStep === 0} className={cn('mr-auto')}>
         <ChevronLeft />
       </Button>

@@ -64,7 +64,7 @@ const Step1 = () => {
               </div>
               <Select
                 onValueChange={(val) => field.onChange(Object(EventType)[val])}
-                defaultValue={form.getValues('type') as unknown as string}
+                defaultValue={Object(EventType)[form.getValues('type')] as unknown as string}
               >
                 <FormControl>
                   <SelectTrigger className="w-full md:w-[400px]">

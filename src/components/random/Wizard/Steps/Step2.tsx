@@ -27,7 +27,7 @@ const Step2 = () => {
                 </FormDescription>
               </div>
               <FormControl>
-                <Location onChange={field.onChange} />
+                <Location value={form.getValues('locationId')} onChange={field.onChange} />
               </FormControl>
               <FormMessage />
             </FormItem>

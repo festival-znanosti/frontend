@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { Check, ChevronsUpDown } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { getAllParentLocations } from '@/api/repository'
 import { Button } from '@/components/ui/button'
@@ -8,13 +8,12 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
 
-const Location = ({ onChange }: { onChange: any }) => {
+const Location = ({ value, onChange }: { value: number | undefined; onChange: any }) => {
   const [open, setOpen] = useState(false)
-  const [value, setValue] = useState<string>('')
 
-  // useEffect(() => {
-  //   console.log(value)
-  // }, [value])
+  useEffect(() => {
+    console.log('Lockaija', value)
+  }, [value])
 
   const { isPending, data: allParentLocations } = useQuery({
     queryKey: ['allParentLocations'],
@@ -25,9 +24,7 @@ const Location = ({ onChange }: { onChange: any }) => {
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" role="combobox" aria-expanded={open} className="w-[400px] justify-between">
-          {value && !isPending
-            ? allParentLocations!.find((location) => location.name.toLocaleLowerCase() === value)?.name
-            : 'Odaberite'}
+          {value && !isPending ? allParentLocations!.find((location) => location.id === value)?.name : 'Odaberite'}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </DropdownMenuTrigger>
@@ -44,16 +41,10 @@ const Location = ({ onChange }: { onChange: any }) => {
                   value={location.name}
                   onSelect={(currentValue) => {
                     onChange(allParentLocations!.find((loc) => loc.name.toLocaleLowerCase() === currentValue)?.id)
-                    setValue(currentValue === value ? '' : currentValue)
                     setOpen(false)
                   }}
                 >
-                  <Check
-                    className={cn(
-                      'mr-2 h-4 w-4',
-                      value === location.name.toLocaleLowerCase() ? 'opacity-100' : 'opacity-0'
-                    )}
-                  />
+                  <Check className={cn('mr-2 h-4 w-4', value === location.id ? 'opacity-100' : 'opacity-0')} />
                   {location.name}
                 </CommandItem>
               ))}

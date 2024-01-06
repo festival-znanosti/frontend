@@ -153,8 +153,8 @@ const Lecturers = ({
             />
 
             <div className="flex h-[62px] items-end ">
-              <Button onClick={addLecturer} type="button" disabled={main && lecturers.length === 1}>
-                <p className="hidden md:block">Dodaj sudionika</p>
+              <Button onClick={addLecturer} type="button" disabled={main && lecturers.some((lec) => lec.type === 0)}>
+                <p className="hidden md:block">Dodaj {main ? 'voditelja' : 'sudionika'}</p>
                 <p className="block md:hidden">Dodaj</p>
               </Button>
             </div>
@@ -168,7 +168,7 @@ const Lecturers = ({
             <TableHead>Ime i prezime</TableHead>
             <TableHead>E-mail</TableHead>
             <TableHead>Broj mobitela</TableHead>
-            <TableHead className="text-right">Ukloni sudionika</TableHead>
+            <TableHead className="text-right">Ukloni {main ? 'voditelja' : 'sudionika'}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -189,19 +189,21 @@ const Lecturers = ({
               </TableRow>
             ))}
 
-          {lecturers.length === 0 && (
-            <TableRow>
-              {main ? (
-                <TableCell colSpan={4} className="text-center">
-                  Nema voditelja
-                </TableCell>
-              ) : (
-                <TableCell colSpan={4} className="text-center">
-                  Nema dodanih sudionika
-                </TableCell>
+          {main
+            ? !lecturers.some((lec) => lec.type === 0) && (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center">
+                    Nema voditelja
+                  </TableCell>
+                </TableRow>
+              )
+            : !lecturers.some((lec) => lec.type === 1) && (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center">
+                    Nema dodanih sudionika
+                  </TableCell>
+                </TableRow>
               )}
-            </TableRow>
-          )}
         </TableBody>
       </Table>
     </>

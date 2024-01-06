@@ -30,7 +30,7 @@ const Step3 = ({
               <div className="mb-4">
                 <FormLabel className="text-base">Voditelj događanja:</FormLabel>
                 <FormDescription>
-                  Navesti ime i kontakt jedne osobe koja je voditelj predavanja / radionice / prezentacije.
+                  Navedite ime i kontakt jedne osobe koja je voditelj predavanja / radionice / prezentacije.
                 </FormDescription>
               </div>
               <FormControl>
@@ -52,7 +52,8 @@ const Step3 = ({
               <div className="mb-4">
                 <FormLabel className="text-base">Sudionici događanja:</FormLabel>
                 <FormDescription>
-                  Navesti ime i kontakt svih osoba koje su uz voditelja sudionici predavanja / radionice / prezentacije.
+                  Navedite ime i kontakt svih osoba koje su uz voditelja sudionici predavanja / radionice /
+                  prezentacije.
                 </FormDescription>
               </div>
               <FormControl>

@@ -1,3 +1,4 @@
+import PageTitle from '../../PageTitle'
 import Stepper from '../Stepper'
 import { useWizardContext } from '../Wizard.context'
 
@@ -20,98 +21,105 @@ const Step4 = () => {
 
   return (
     <>
-      <FormField
-        control={form.control}
-        name="participantsAges"
-        render={() => (
-          <FormItem>
-            <div className="mb-4">
-              <FormLabel className="text-base">Uzrast sudionika</FormLabel>
-              <FormDescription>Odaberite sve uzraste prikladne za Vaš događaj</FormDescription>
-            </div>
-            {ParticipantsAges.map((age) => (
-              <FormField
-                key={age.id}
-                control={form.control}
-                name="participantsAges"
-                render={({ field }) => {
-                  return (
-                    <FormItem key={age.id} className="flex flex-row items-start space-x-3 space-y-0">
-                      <FormControl>
-                        <Checkbox
-                          checked={field.value.some((a) => a.id === age.id)}
-                          onCheckedChange={(checked) => {
-                            return checked
-                              ? field.onChange([...field.value, age])
-                              : field.onChange(field.value.filter((value) => value.id !== age.id))
-                          }}
-                        />
-                      </FormControl>
-                      <FormLabel className="font-normal">{`${age.label} - ${age.age}`}</FormLabel>
-                    </FormItem>
-                  )
-                }}
-              />
-            ))}
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      <div className="w-full flex-1">
+        <PageTitle title="Posjetitelji" description="Unesite informacije vezane za posjetitelje te dodatnu opremu." />
+        <br />
 
-      <br />
+        <FormField
+          control={form.control}
+          name="participantsAges"
+          render={() => (
+            <FormItem>
+              <div className="mb-4">
+                <FormLabel className="text-base">Uzrast posjetitelja</FormLabel>
+                <FormDescription>Odaberite sve uzraste prikladne za Vaš događaj</FormDescription>
+              </div>
+              {ParticipantsAges.map((age) => (
+                <FormField
+                  key={age.id}
+                  control={form.control}
+                  name="participantsAges"
+                  render={({ field }) => {
+                    return (
+                      <FormItem key={age.id} className="flex flex-row items-start space-x-3 space-y-0">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value.some((a) => a.id === age.id)}
+                            onCheckedChange={(checked) => {
+                              return checked
+                                ? field.onChange([...field.value, age])
+                                : field.onChange(field.value.filter((value) => value.id !== age.id))
+                            }}
+                          />
+                        </FormControl>
+                        <FormLabel className="font-normal">{`${age.label} - ${age.age}`}</FormLabel>
+                      </FormItem>
+                    )
+                  }}
+                />
+              ))}
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-      <FormField
-        control={form.control}
-        name="visitorsCount"
-        render={({ field }) => (
-          <FormItem>
-            <div className="mb-4">
-              <FormLabel className="text-base" htmlFor="visitorsCount">
-                Predviđeni broj posjetitelja:
-              </FormLabel>
+        <br />
+
+        <FormField
+          control={form.control}
+          name="visitorsCount"
+          render={({ field }) => (
+            <FormItem>
+              <div className="mb-4">
+                <FormLabel className="text-base" htmlFor="visitorsCount">
+                  Predviđeni broj posjetitelja
+                </FormLabel>
+                <FormDescription>
+                  Navesti koliki broj posjetitelja može sudjelovati predavanju / prezentaciji / radionici
+                </FormDescription>
+              </div>
+              <FormControl>
+                <Input
+                  id="visitorsCount"
+                  placeholder="30"
+                  type="number"
+                  {...field}
+                  onChange={(e) => field.onChange(parseInt(e.target.value, 10))}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <br />
+
+        {/* potrebna oprema */}
+        <FormField
+          control={form.control}
+          name="equipment"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel htmlFor="equipment">Potrebna oprema i podrška:</FormLabel>
               <FormDescription>
-                Navesti koliki broj posjetitelja može sudjelovati predavanju / prezentaciji / radionici
+                Mi osiguravamo laptop / kompjuter, projektor / TV ekran i pristup internetu, potreban Vam je samo usb,
+                navedite ako je još nešto potrebno ili imate posebne napomene.
               </FormDescription>
-            </div>
-            <FormControl>
-              <Input
-                id="visitorsCount"
-                placeholder="30"
-                type="number"
-                {...field}
-                onChange={(e) => field.onChange(parseInt(e.target.value, 10))}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+              <FormControl>
+                <Textarea
+                  id="equipment"
+                  placeholder="LCD projektor, platno, TV, računalo, stolice…)"
+                  className="resize-none"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <br />
+      </div>
 
-      <br />
-
-      {/* potrebna oprema */}
-      <FormField
-        control={form.control}
-        name="equipment"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel htmlFor="equipment">Potrebna oprema i podrška:</FormLabel>
-            <FormDescription>
-              Mi osiguravamo laptop / kompjuter, projektor / TV ekran i pristup internetu, potreban Vam je samo usb,
-              navedite ako je još nešto potrebno ili imate posebne napomene.
-            </FormDescription>
-            <FormControl>
-              <Textarea
-                id="equipment"
-                placeholder="LCD projektor, platno, TV, računalo, stolice…)"
-                className="resize-none"
-                {...field}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
       <Stepper trigger={() => form.trigger(['participantsAges', 'visitorsCount', 'equipment'])} />
     </>
   )

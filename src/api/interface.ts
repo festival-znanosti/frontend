@@ -35,4 +35,8 @@ type Location = {
   parentLocationName: string | null
 }
 
-export type GetAllParentLocationsResponse = Array<Location>
+export type AllLocationsResponse = Array<Location>
+
+export interface CreateLocationResponse {
+  message: string
+}

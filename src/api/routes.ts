@@ -36,6 +36,13 @@ export const SELF_ROUTE = () => `${BASE_URL}/Account/Details` as const
 export const LOCATION_BASE_URL = `${BASE_URL}/api/Location` as const
 
 export const GET_ALL_PARENT_LOCATIONS_ROUTE = () => `${LOCATION_BASE_URL}/ParentLocations` as const
+export const GET_ALL_CHILD_LOCATIONS_ROUTE = (parentId: number) =>
+  `${LOCATION_BASE_URL}/ChildLocations?parentLocationId=${parentId}` as const
+export const CREATE_PARENT_LOCATION_ROUTE = (locationName: string) =>
+  `${LOCATION_BASE_URL}/Parent/Create?locationName=${locationName}` as const
+export const CREATE_CHILD_LOCATION_ROUTE = (locationName: string, parentLocationId: number) =>
+  `${LOCATION_BASE_URL}/Child/Create?locationName=${locationName}&parentId=${parentLocationId}` as const
+
 // export const GET_CHILD_LOCATIONS_ROUTE = (parentLocationID: number) =>
 //   `${LOCATION_BASE_URL}/ChildLocations?${parentLocationID}` as const
 // export const CREATE_PARENT_LOCATION_ROUTE = () => `${LOCATION_BASE_URL}/Parent/Create` as const

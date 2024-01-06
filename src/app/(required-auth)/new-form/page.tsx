@@ -19,8 +19,14 @@ export type EventFormSchemaType = z.infer<typeof EventFormSchema>
 const EventFormSchema = z
   .object({
     title: z.string().min(1, 'Naziv događanja je obavezan'),
-    type: z.nativeEnum(EventType, { required_error: 'Odaberite vrstu događanja' }),
-    locationId: z.coerce.number({ required_error: 'Odaberite lokaciju događanja' }),
+    type: z.nativeEnum(EventType, {
+      required_error: 'Odaberite vrstu događanja',
+      invalid_type_error: 'Odaberite vrstu događanja',
+    }),
+    locationId: z.number({
+      required_error: 'Odaberite lokaciju događanja',
+      invalid_type_error: 'Odaberite lokaciju događanja',
+    }),
     participantsAges: z
       .array(
         z.object({
@@ -105,6 +111,7 @@ const Page = () => {
           <WizardStep>
             <Step5 />
           </WizardStep>
+          {JSON.stringify(form.getValues())}
         </form>
       </Form>
     </Wizard>

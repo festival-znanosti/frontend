@@ -1,6 +1,6 @@
 import { getAuthToken } from './auth.client'
 
-import { auth } from '@/api/repository'
+import { getAccountDetails } from '@/api/repository'
 import { isClient } from '@/lib/utils'
 
 // TODO: Fix this
@@ -10,7 +10,7 @@ export const fetchSelf = async (authToken: string | null) => {
       authToken = getAuthToken()
     }
 
-    const response = await auth()
+    const response = await getAccountDetails()
 
     return response
   } catch (error) {

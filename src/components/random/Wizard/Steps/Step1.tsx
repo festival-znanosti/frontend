@@ -18,7 +18,7 @@ export enum EventType {
 const Step1 = () => {
   const { form } = useWizardContext<EventFormSchemaType>()
 
-  const { accountDetails, isPendingAccountDetails, refetchAccountDetails } = useAccountDetails()
+  const { accountDetails } = useAccountDetails()
 
   console.log('AccountDetails', accountDetails)
 

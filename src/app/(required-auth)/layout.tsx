@@ -1,28 +1,14 @@
-// import { redirect } from 'next/navigation'
+'use client'
 
 import Sidebar from '@/components/layout/sidebar/Sidebar'
-// import { useAccountDetails } from '@/components/providers/all/auth/auth_NEW'
-
-// import { fetchSelfServer } from '@/components/providers/all/auth/auth.server'
+import { useIsAuthenticated } from '@/components/providers/all/AuthProvider'
 
 export default async function RequireAuthLayout({ children }: { children: React.ReactNode }) {
-  // const user = await fetchSelfServer()
-
-  // if (!user) {
-  //    redirect('/login')
-  // }
-
-  // const { accountDetails, isPendingAccountDetails, refetchAccountDetails } = useAccountDetails()
-
-  // if (isPendingAccountDetails) {
-  //   return <div>Loading...</div>
-  // }
-
-  // if (!accountDetails) {
-  //   return <div>Not authenticated</div>
-  // }
-
-  // console.log('AccountDetails', accountDetails)
+  const isAuthenticated = useIsAuthenticated()
+  if (!isAuthenticated) {
+    // naviagte to login
+    console.log('not authenticated')
+  }
 
   return (
     <div className="flex h-full w-full overflow-y-hidden">

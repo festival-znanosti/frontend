@@ -1,24 +1,6 @@
-import { getAuthToken } from '@/components/providers/all/auth/auth.client'
-import { isClient } from '@/lib/utils'
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const JSON_HEADER: { [key: string]: any } = {
   'Content-Type': 'application/json',
-  credentials: 'include',
-}
-
-const addHeader = (headers: HeadersInit, name: string, value: string) => {
-  if (Array.isArray(headers)) {
-    headers.push([name, value])
-    return
-  }
-
-  if (headers instanceof Headers) {
-    headers.append(name, value)
-    return
-  }
-
-  headers[name] = value
 }
 
 export type BaseJsonOptions = RequestInit & {
@@ -45,14 +27,6 @@ async function sendRequest<TData>(
   const { ...fetchOptions } = options
 
   const headers = options?.headers ?? {}
-  let authToken = options?.authToken
-  if (!authToken && isClient()) {
-    authToken = getAuthToken()
-  }
-
-  if (authToken) {
-    addHeader(headers, 'Authorization', `Bearer ${authToken}`)
-  }
 
   const res = await fetch(url, {
     method,
@@ -72,14 +46,6 @@ async function sendRequestNoBody<TData>(url: string, method: string, options: Ba
   const { ...fetchOptions } = options
 
   const headers = options?.headers ?? {}
-  let authToken = options?.authToken
-  if (!authToken && isClient()) {
-    authToken = getAuthToken()
-  }
-
-  if (authToken) {
-    addHeader(headers, 'Cookie', `${authToken}`)
-  }
 
   const res = await fetch(url, {
     method,

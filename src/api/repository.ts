@@ -7,7 +7,7 @@ export const login = (body: I.LoginBody) => postJson<I.LoginResponse>(R.LOGIN_RO
 
 // nije istestirano
 export const logout = () => getJson(R.LOGOUT_ROUTE())
-export const auth = () => getJson<I.SelfResponse>(R.SELF_ROUTE(), {})
+export const getAccountDetails = () => getJson<I.SelfResponse>(R.SELF_ROUTE())
 
 export const getAllParentLocations = () => getJson<I.AllLocationsResponse>(R.GET_ALL_PARENT_LOCATIONS_ROUTE())
 export const getAllChildLocations = (parentId: number) =>

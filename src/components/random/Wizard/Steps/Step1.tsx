@@ -1,9 +1,6 @@
-import { SelectViewport } from '@radix-ui/react-select'
-import { z } from 'zod'
-
 import PageTitle from '../../PageTitle'
 
-import { EventFormSchema } from '@/app/(required-auth)/new-form/page'
+import { EventFormSchemaType } from '@/app/(required-auth)/proba/page'
 import Stepper from '@/components/random/Wizard/Stepper'
 import { useWizardContext } from '@/components/random/Wizard/Wizard.context'
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
@@ -18,7 +15,7 @@ export enum EventType {
 }
 
 const Step1 = () => {
-  const { form } = useWizardContext<z.infer<typeof EventFormSchema>>()
+  const { form } = useWizardContext<EventFormSchemaType>()
   return (
     <>
       <div className="w-full flex-1">

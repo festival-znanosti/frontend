@@ -1,5 +1,5 @@
 import { createDescendantContext } from '@chakra-ui/descendant'
-import { HTMLProps, type PropsWithChildren, forwardRef, useCallback, useMemo, useState } from 'react'
+import { HTMLProps, type PropsWithChildren, forwardRef, useCallback, useState } from 'react'
 import { FieldValues, UseFormReturn } from 'react-hook-form'
 
 import { WizardContext, WizardControlsContext, useWizardContext, useWizardControlsContext } from './Wizard.context'
@@ -35,7 +35,7 @@ export const Wizard = forwardRef<HTMLDivElement, PropsWithChildren<WizardProps<a
       <div
         ref={ref}
         {...rest}
-        className="flex h-max min-h-full w-full flex-col [&>form>div]:flex [&>form>div]:min-h-full [&>form>div]:flex-1 [&>form>div]:flex-col"
+        className="flex h-max min-h-full w-full flex-col [&>form>[hidden]]:flex-none [&>form>div]:flex [&>form>div]:min-h-full [&>form>div]:flex-1 [&>form>div]:flex-col"
       >
         <WizardContext.Provider value={context}>
           <WizardControlsContext.Provider value={setCurrentStep}>

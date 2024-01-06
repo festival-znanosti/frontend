@@ -1,11 +1,9 @@
-import { z } from 'zod'
-
 import Lecturers, { LecturerArrayType } from '../../Lecturers/Lecturers'
 import PageTitle from '../../PageTitle'
 import Stepper from '../Stepper'
 import { useWizardContext } from '../Wizard.context'
 
-import { EventFormSchema } from '@/app/(required-auth)/proba/page'
+import { EventFormSchemaType } from '@/app/(required-auth)/proba/page'
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 
 const Step3 = ({
@@ -16,7 +14,7 @@ const Step3 = ({
   setLecturers: (lecturers: LecturerArrayType) => void
   main?: boolean
 }) => {
-  const { form } = useWizardContext<z.infer<typeof EventFormSchema>>()
+  const { form } = useWizardContext<EventFormSchemaType>()
   return (
     <>
       <div className="w-full flex-1">

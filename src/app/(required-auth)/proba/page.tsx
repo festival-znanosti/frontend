@@ -1,6 +1,6 @@
 'use client'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -13,7 +13,9 @@ import { Wizard, WizardStep } from '@/components/random/Wizard/Wizard'
 import { Form } from '@/components/ui/form'
 import { toast } from '@/components/ui/use-toast'
 
-export const EventFormSchema = z
+export type EventFormSchemaType = z.infer<typeof EventFormSchema>
+
+const EventFormSchema = z
   .object({
     title: z.string().min(1, 'Naziv događanja je obavezan'),
     type: z.nativeEnum(EventType, { required_error: 'Odaberite vrstu događanja' }),
@@ -59,17 +61,6 @@ const Page = () => {
   })
 
   const [lecturers, setLecturers] = useState<LecturerArrayType>([])
-  // const initialRender = useRef(true)
-
-  // useEffect(() => {
-  //   if (initialRender.current === true) {
-  //     initialRender.current = false
-  //     return
-  //   } else {
-  //     form.setValue('lecturers', lecturers)
-  //     form.trigger(['lecturers'])
-  //   }
-  // }, [lecturers])
 
   const [firstRender, setFirstRender] = useState(true)
 
@@ -101,15 +92,17 @@ const Page = () => {
           <WizardStep>
             <Step1 />
           </WizardStep>
-          {/* <WizardStep>
+          <WizardStep>
             <Step2 />
-          </WizardStep> */}
+          </WizardStep>
           <WizardStep>
             <Step3 lecturers={lecturers} setLecturers={setLecturers} />
           </WizardStep>
           <WizardStep>
             <Step4 />
           </WizardStep>
+          {/* <pre>{JSON.stringify(form.getValues(), null, 2)}</pre>
+          <pre>{JSON.stringify(form.formState.errors, null, 2)}</pre> */}
         </form>
       </Form>
     </Wizard>

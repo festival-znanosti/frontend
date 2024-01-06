@@ -17,7 +17,7 @@ import { Select, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from '@/components/ui/use-toast'
 
-export enum EventType {
+enum EventType {
   Predavanje = 0,
   Prezentacija = 1,
   Radionica = 2,
@@ -32,7 +32,7 @@ const ParticipantsAges = [
   { id: '5', label: 'PP', age: 'djeca s posebnim potrebama' },
 ] as const
 
-export const EventFormSchema = z
+const EventFormSchema = z
   .object({
     title: z.string().min(1, 'Naziv događanja je obavezan'),
     type: z.nativeEnum(EventType, { required_error: 'Odaberite vrstu događanja' }),

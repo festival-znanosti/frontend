@@ -107,12 +107,18 @@ const Location: FC<LocationProps> = ({ value: _value, onChange }) => {
                         key={location.id}
                         value={location.name}
                         onSelect={(currentValue) => {
-                          onChange(allParentLocations!.find((loc) => loc.name.toLocaleLowerCase() === currentValue)?.id)
-                          setOpenParent(false)
-                          setParentId(
-                            allParentLocations!.find((loc) => loc.name.toLocaleLowerCase() === currentValue)?.id
+                          const selectedLocation = allParentLocations!.find(
+                            (loc) => loc.name.toLocaleLowerCase() === currentValue
                           )
+                          if (parentId === selectedLocation?.id) {
+                            setParentId(undefined)
+                            onChange(undefined)
+                          } else {
+                            setParentId(selectedLocation?.id)
+                            onChange(selectedLocation?.id)
+                          }
                           setChildId(undefined)
+                          setOpenParent(false)
                         }}
                       >
                         <Check className={cn('mr-2 h-4 w-4', parentId === location.id ? 'opacity-100' : 'opacity-0')} />
@@ -182,11 +188,17 @@ const Location: FC<LocationProps> = ({ value: _value, onChange }) => {
                         key={location.id}
                         value={location.name}
                         onSelect={(currentValue) => {
-                          onChange(allChildLocations!.find((loc) => loc.name.toLocaleLowerCase() === currentValue)?.id)
-                          setOpenChild(false)
-                          setChildId(
-                            allChildLocations!.find((loc) => loc.name.toLocaleLowerCase() === currentValue)?.id
+                          const selectedLocation = allChildLocations!.find(
+                            (loc) => loc.name.toLocaleLowerCase() === currentValue
                           )
+                          if (childId === selectedLocation?.id) {
+                            setChildId(undefined)
+                            onChange(parentId)
+                          } else {
+                            setChildId(selectedLocation?.id)
+                            onChange(selectedLocation?.id)
+                          }
+                          setOpenChild(false)
                         }}
                       >
                         <Check className={cn('mr-2 h-4 w-4', childId === location.id ? 'opacity-100' : 'opacity-0')} />
@@ -212,7 +224,11 @@ const Location: FC<LocationProps> = ({ value: _value, onChange }) => {
               value={createChildLocationState}
               onChange={(e) => setCreateChildLocationState(e.target.value)}
             />
-            <Button type="button" onClick={createChildLocationFn} disabled={createChildLocationState === undefined}>
+            <Button
+              type="button"
+              onClick={createChildLocationFn}
+              disabled={createChildLocationState === undefined || !parentId}
+            >
               Dodaj Podlokaciju
             </Button>
           </div>

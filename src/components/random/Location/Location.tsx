@@ -72,7 +72,7 @@ const Location: FC<LocationProps> = ({ value: _value, onChange }) => {
   // TODO: use value to fetch location and set parent and child id
 
   return (
-    <div className="flex w-full flex-col gap-5">
+    <div className="flex w-full flex-col gap-10">
       <div className="flex w-full flex-col gap-4 lg:flex-row lg:justify-between">
         <div className="flex w-full flex-col lg:w-[50%]">
           <div className="mb-4">
@@ -150,8 +150,6 @@ const Location: FC<LocationProps> = ({ value: _value, onChange }) => {
           </div>
         </div>
       </div>
-
-      <br />
 
       <div className="flex w-full flex-col gap-4 lg:flex-row lg:justify-between">
         <div className="flex w-full flex-col lg:w-[50%]">

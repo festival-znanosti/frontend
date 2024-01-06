@@ -110,7 +110,7 @@ const Page = () => {
           <WizardStep>
             <Step5 />
           </WizardStep>
-          {JSON.stringify(form.getValues())}
+          {/* {JSON.stringify(form.getValues())} */}
         </form>
       </Form>
     </Wizard>

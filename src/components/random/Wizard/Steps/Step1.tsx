@@ -1,6 +1,7 @@
 import PageTitle from '../../PageTitle'
 
 import { EventFormSchemaType } from '@/app/(required-auth)/new-form/page'
+import { useAccountDetails } from '@/components/providers/all/auth/auth_NEW'
 import Stepper from '@/components/random/Wizard/Stepper'
 import { useWizardContext } from '@/components/random/Wizard/Wizard.context'
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
@@ -16,6 +17,11 @@ export enum EventType {
 
 const Step1 = () => {
   const { form } = useWizardContext<EventFormSchemaType>()
+
+  const { accountDetails, isPendingAccountDetails, refetchAccountDetails } = useAccountDetails()
+
+  console.log('AccountDetails', accountDetails)
+
   return (
     <>
       <div className="w-full flex-1">

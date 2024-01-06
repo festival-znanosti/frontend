@@ -1,6 +1,7 @@
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+/* eslint-disable @typescript-eslint/no-explicit-any */
 const JSON_HEADER: { [key: string]: any } = {
   'Content-Type': 'application/json',
+  accept: 'application/json',
 }
 
 export type BaseJsonOptions = RequestInit & {
@@ -27,11 +28,12 @@ async function sendRequest<TData>(
   const { ...fetchOptions } = options
 
   const headers = options?.headers ?? {}
+  const isBodyEmpty = Object.keys(body).length === 0
 
   const res = await fetch(url, {
     method,
     ...fetchOptions,
-    body: body ? JSON.stringify(body) : undefined,
+    body: !isBodyEmpty ? JSON.stringify(body) : null,
     credentials: 'include',
     headers: {
       ...JSON_HEADER,
@@ -42,32 +44,14 @@ async function sendRequest<TData>(
   return await handleResponse(res)
 }
 
-async function sendRequestNoBody<TData>(url: string, method: string, options: BaseJsonOptions = {}): Promise<TData> {
-  const { ...fetchOptions } = options
+export const getJson = async <TData>(url: string, body?: { [key: string]: any }, options: BaseJsonOptions = {}) =>
+  sendRequest<TData>(url, 'GET', body, options)
 
-  const headers = options?.headers ?? {}
-
-  const res = await fetch(url, {
-    method,
-    ...fetchOptions,
-    credentials: 'include',
-    headers: {
-      ...JSON_HEADER,
-      ...headers,
-    },
-  })
-
-  return await handleResponse(res)
-}
-
-export const getJson = async <TData>(url: string, options: BaseJsonOptions = {}) =>
-  sendRequestNoBody<TData>(url, 'GET', options)
-
-export const postJson = async <TData>(url: string, body = {}, options: BaseJsonOptions = {}) =>
+export const postJson = async <TData>(url: string, body: { [key: string]: any }, options: BaseJsonOptions = {}) =>
   sendRequest<TData>(url, 'POST', body, options)
 
-export const putJson = async <TData>(url: string, body = {}, options: BaseJsonOptions = {}) =>
+export const putJson = async <TData>(url: string, body: { [key: string]: any }, options: BaseJsonOptions = {}) =>
   sendRequest<TData>(url, 'PUT', body, options)
 
-export const deleteJson = async <TData>(url: string, options: BaseJsonOptions = {}) =>
-  sendRequestNoBody<TData>(url, 'DELETE', options)
+export const deleteJson = async <TData>(url: string, body?: { [key: string]: any }, options: BaseJsonOptions = {}) =>
+  sendRequest<TData>(url, 'DELETE', body, options)

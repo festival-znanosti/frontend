@@ -22,14 +22,7 @@ const Step2 = () => {
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <Location
-                  value={form.getValues('locationId')}
-                  onChange={field.onChange}
-                  // parentId={parentId}
-                  // setParentId={setParentId}
-                  // childId={childId}
-                  // setChildId={setChildId}
-                />
+                <Location value={form.getValues('locationId')} onChange={field.onChange} />
               </FormControl>
               <FormMessage />
             </FormItem>

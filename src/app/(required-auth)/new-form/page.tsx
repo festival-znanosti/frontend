@@ -68,7 +68,6 @@ const Page = () => {
   })
 
   const [lecturers, setLecturers] = useState<LecturerArrayType>([])
-
   const [firstRender, setFirstRender] = useState(true)
 
   useEffect(() => {

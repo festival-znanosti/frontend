@@ -16,7 +16,7 @@ interface LocationProps {
   value: number | undefined
   onChange: (...event: any[]) => void
 }
-const Location: FC<LocationProps> = ({ value, onChange }) => {
+const Location: FC<LocationProps> = ({ value: _value, onChange }) => {
   const [openParent, setOpenParent] = useState(false)
   const [openChild, setOpenChild] = useState(false)
 

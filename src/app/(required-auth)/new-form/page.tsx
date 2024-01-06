@@ -1,36 +1,20 @@
 'use client'
-
 import { zodResolver } from '@hookform/resolvers/zod'
-import { SelectContent, SelectViewport } from '@radix-ui/react-select'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
-import Calendar from '@/components/random/Calendar/Calendar'
-import Lecturers, { LecturerArrayType, LecturerSchema } from '@/components/random/Lecturers/Lecturers'
-import PageTitle from '@/components/random/PageTitle'
-import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { Select, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
+import { LecturerArrayType, LecturerSchema } from '@/components/random/Lecturers/Lecturers'
+import Step1, { EventType } from '@/components/random/Wizard/Steps/Step1'
+import Step2 from '@/components/random/Wizard/Steps/Step2'
+import Step3 from '@/components/random/Wizard/Steps/Step3'
+import Step4 from '@/components/random/Wizard/Steps/Step4'
+import Step5 from '@/components/random/Wizard/Steps/Step5'
+import { Wizard, WizardStep } from '@/components/random/Wizard/Wizard'
+import { Form } from '@/components/ui/form'
 import { toast } from '@/components/ui/use-toast'
 
-enum EventType {
-  Predavanje = 0,
-  Prezentacija = 1,
-  Radionica = 2,
-  Izložba = 4,
-}
-
-const ParticipantsAges = [
-  { id: '1', label: 'S0', age: 'predškolski uzrast i niži razredi osnovne škole' },
-  { id: '2', label: 'S1', age: '5. i 6. razred osnovne škole' },
-  { id: '3', label: 'S2', age: '7. i 8. razred osnovne škole, 1. razred srednje škole' },
-  { id: '4', label: 'S3', age: '2., 3. i 4. razred srednje škole' },
-  { id: '5', label: 'PP', age: 'djeca s posebnim potrebama' },
-] as const
+export type EventFormSchemaType = z.infer<typeof EventFormSchema>
 
 const EventFormSchema = z
   .object({
@@ -62,7 +46,7 @@ const EventFormSchema = z
     message: 'Broj posjetitelja mora biti broj',
   })
 
-export default function NewForm() {
+const Page = () => {
   const form = useForm<z.infer<typeof EventFormSchema>>({
     resolver: zodResolver(EventFormSchema),
     defaultValues: {
@@ -78,11 +62,12 @@ export default function NewForm() {
   })
 
   const [lecturers, setLecturers] = useState<LecturerArrayType>([])
-  const initialRender = useRef(true)
+
+  const [firstRender, setFirstRender] = useState(true)
 
   useEffect(() => {
-    if (initialRender.current === true) {
-      initialRender.current = false
+    if (firstRender) {
+      setFirstRender(false)
       return
     } else {
       form.setValue('lecturers', lecturers)
@@ -102,230 +87,28 @@ export default function NewForm() {
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <PageTitle title="Obrazac za prijavu" description="Unesite informacije vezane uz dogadaj" />
-        <br />
-
-        <FormField
-          control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <div className="mb-4">
-                <FormLabel className="text-base" htmlFor="title">
-                  Naziv događanja
-                </FormLabel>
-                <FormDescription>Upišite naziv / naslov radionice / predavanja / prezentacije</FormDescription>
-              </div>
-              <FormControl>
-                <Input id="title" placeholder="Kako napraviti jako dobru aplikaciju" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <br />
-        <FormField
-          control={form.control}
-          name="type"
-          render={({ field }) => (
-            <FormItem>
-              <div className="mb-4">
-                <FormLabel className="text-base" htmlFor="type">
-                  Vrsta događanja
-                </FormLabel>
-                <FormDescription>
-                  Izborom predavanja odabirete ex-catedra predavanje u kino dvorani kapaciteta do 80 osoba, ukupan broj
-                  predavanja u toj dvorani manji je od ukupnog broja radionica i prezentacija u izložbenoj dvorani, pa
-                  moguće da su svi termini već popunjeni, u tom slučaju molimo da prilagodite predavanje načinu
-                  izlaganja poput prezentacije u izložbenoj dvorani u kojoj se istovremeno održava više prezentacija /
-                  radionica. Radionice i prezentacije se održavaju u izložbenoj dvorani na stolu s projektorom ili
-                  televizorom. Radionicu i prezentaciju moguće je po potrebi i posjećenosti provesti više puta u
-                  odabranom terminu. Za lokaciju radionice ili prezentacije možete izabrati i dvorište, ali tada ovisite
-                  o vremenskim prilikama, u dvorištu možemo osigurati izvor struje i televizor.
-                </FormDescription>
-              </div>
-              <Select
-                onValueChange={(val) => field.onChange(Object(EventType)[val])}
-                defaultValue={form.getValues('type') as unknown as string}
-              >
-                <FormControl>
-                  <SelectTrigger className="w-full md:w-[400px]">
-                    <SelectValue placeholder="Odaberite" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectViewport className="rounded-md border bg-background">
-                    {Object.keys(EventType)
-                      .filter((val) => isNaN(+val))
-                      .map((type, index) => (
-                        <SelectItem value={type} key={index}>
-                          {type}
-                        </SelectItem>
-                      ))}
-                  </SelectViewport>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <br />
-        {/* Location*/}
-        {/* <FormField
-          control={form.control}
-          name="locationId"
-          render={({ field }) => (
-            <FormItem>
-              <div className="mb-4">
-                <FormLabel className="text-base">Lokacija događaja:</FormLabel>
-                <FormDescription>izaberite to be done....</FormDescription>
-              </div>
-              <FormControl>
-                <Location onChange={field.onChange} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        /> */}
-
-        <FormField
-          control={form.control}
-          name="participantsAges"
-          render={() => (
-            <FormItem className="mt-6">
-              <div className="mb-4">
-                <FormLabel className="text-base">Uzrast sudionika</FormLabel>
-                <FormDescription>Odaberite sve uzraste prikladne za Vaš događaj</FormDescription>
-              </div>
-              {ParticipantsAges.map((age) => (
-                <FormField
-                  key={age.id}
-                  control={form.control}
-                  name="participantsAges"
-                  render={({ field }) => {
-                    return (
-                      <FormItem key={age.id} className="flex flex-row items-start space-x-3 space-y-0">
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value.some((a) => a.id === age.id)}
-                            onCheckedChange={(checked) => {
-                              return checked
-                                ? field.onChange([...field.value, age])
-                                : field.onChange(field.value.filter((value) => value.id !== age.id))
-                            }}
-                          />
-                        </FormControl>
-                        <FormLabel className="font-normal">{`${age.label} - ${age.age}`}</FormLabel>
-                      </FormItem>
-                    )
-                  }}
-                />
-              ))}
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="visitorsCount"
-          render={({ field }) => (
-            <FormItem className="mt-6">
-              <div className="mb-4">
-                <FormLabel className="text-base" htmlFor="visitorsCount">
-                  Predviđeni broj posjetitelja:
-                </FormLabel>
-                <FormDescription>
-                  Navesti koliki broj posjetitelja može sudjelovati predavanju / prezentaciji / radionici
-                </FormDescription>
-              </div>
-              <FormControl>
-                <Input
-                  id="visitorsCount"
-                  placeholder="30"
-                  type="number"
-                  {...field}
-                  onChange={(e) => field.onChange(parseInt(e.target.value, 10))}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <br />
-        {/* glavni sudionik */}
-        <FormField
-          control={form.control}
-          name="lecturers"
-          render={() => (
-            <FormItem>
-              <div className="mb-4">
-                <FormLabel className="text-base">Voditelj događanja:</FormLabel>
-                <FormDescription>
-                  Navesti ime i kontakt jedne osobe koja je voditelj predavanja / radionice / prezentacije.
-                </FormDescription>
-              </div>
-              <FormControl>
-                <Lecturers lecturers={lecturers} setLecturers={setLecturers} main={true} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <br />
-        {/* ostali sudionici */}
-        <FormField
-          control={form.control}
-          name="lecturers"
-          render={() => (
-            <FormItem>
-              <div className="mb-4">
-                <FormLabel className="text-base">Sudionici događanja:</FormLabel>
-                <FormDescription>
-                  Navesti ime i kontakt svih osoba koje su uz voditelja sudionici predavanja / radionice / prezentacije.
-                </FormDescription>
-              </div>
-              <FormControl>
-                <Lecturers lecturers={lecturers} setLecturers={setLecturers} />
-              </FormControl>
-              {/* <FormMessage /> */}
-            </FormItem>
-          )}
-        />
-        <br />
-        {/* potrebna oprema */}
-        <FormField
-          control={form.control}
-          name="equipment"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel htmlFor="equipment">Potrebna oprema i podrška:</FormLabel>
-              <FormDescription>
-                Mi osiguravamo laptop / kompjuter, projektor / TV ekran i pristup internetu, potreban Vam je samo usb,
-                navedite ako je još nešto potrebno ili imate posebne napomene.
-              </FormDescription>
-              <FormControl>
-                <Textarea
-                  id="equipment"
-                  placeholder="LCD projektor, platno, TV, računalo, stolice…)"
-                  className="resize-none"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <br />
-        <Calendar />
-        <br />
-        <Button type="submit" className="mt-6">
-          Predaj
-        </Button>
-      </form>
-    </Form>
+    <Wizard form={form}>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="flex h-max min-h-full flex-1 flex-col">
+          <WizardStep>
+            <Step1 />
+          </WizardStep>
+          <WizardStep>
+            <Step2 />
+          </WizardStep>
+          <WizardStep>
+            <Step3 lecturers={lecturers} setLecturers={setLecturers} />
+          </WizardStep>
+          <WizardStep>
+            <Step4 />
+          </WizardStep>
+          <WizardStep>
+            <Step5 />
+          </WizardStep>
+        </form>
+      </Form>
+    </Wizard>
   )
 }
+
+export default Page

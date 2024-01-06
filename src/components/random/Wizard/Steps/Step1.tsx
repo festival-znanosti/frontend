@@ -1,6 +1,6 @@
 import PageTitle from '../../PageTitle'
 
-import { EventFormSchemaType } from '@/app/(required-auth)/proba/page'
+import { EventFormSchemaType } from '@/app/(required-auth)/new-form/page'
 import Stepper from '@/components/random/Wizard/Stepper'
 import { useWizardContext } from '@/components/random/Wizard/Wizard.context'
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'

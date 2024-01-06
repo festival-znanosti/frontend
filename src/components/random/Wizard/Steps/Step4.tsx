@@ -2,7 +2,7 @@ import PageTitle from '../../PageTitle'
 import Stepper from '../Stepper'
 import { useWizardContext } from '../Wizard.context'
 
-import { EventFormSchemaType } from '@/app/(required-auth)/proba/page'
+import { EventFormSchemaType } from '@/app/(required-auth)/new-form/page'
 import { Checkbox } from '@/components/ui/checkbox'
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'

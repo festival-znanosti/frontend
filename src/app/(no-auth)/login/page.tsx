@@ -47,6 +47,7 @@ export default function Login() {
         title: 'Uspjesno ste se ulogirali!',
         description: response.message,
       })
+
       router.push('/new-form')
     },
 

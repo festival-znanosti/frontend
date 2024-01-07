@@ -20,10 +20,11 @@
     "@radix-ui/react-select": "^2.0.0",
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-toast": "^1.1.5",
-    "@tanstack/react-query": "^5.7.2",
+    "@tanstack/react-query": "^5.17.7",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "cmdk": "^0.2.0",
+    "i": "^0.3.7",
     "lucide-react": "^0.291.0",
     "next": "14.0.1",
     "next-themes": "^0.2.1",
@@ -36,6 +37,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@tanstack/react-query-devtools": "^5.17.7",
     "@tanstack/eslint-plugin-query": "^5.6.0",
     "@testing-library/jest-dom": "^6.1.4",
     "@testing-library/react": "^14.0.0",

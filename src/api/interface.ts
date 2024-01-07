@@ -11,13 +11,14 @@ export interface LoginBody {
   password: string
 }
 
-export interface RegisterResponse {
-  message: string
+export interface ChangePasswordBody {
+  id: number
+  oldPassword: string
+  newPassword: string
+  confirmNewPassword: string
 }
-
-export interface LoginResponse {
+export interface MessageResponse {
   message: string
-  token: string
 }
 
 export type SelfResponse = {

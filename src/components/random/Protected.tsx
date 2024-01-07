@@ -12,19 +12,19 @@ export const Protected = ({ roles, children }: { roles: Role[]; children: React.
   const router = useRouter()
 
   if (isLoadingAccountDetails) {
-    return
-  }
+    return null
+  } else {
+    if (!accountDetails) {
+      router.push('/login')
+      return null
+    }
 
-  if (!accountDetails) {
-    router.push('/login')
-    return
-  }
+    const userRole = accountDetails.role === 0 ? 'ADMIN' : 'USER'
+    if (!roles.includes(userRole)) {
+      router.push('/login')
+      return null
+    }
 
-  const userRole = accountDetails.role === 0 ? 'ADMIN' : 'USER'
-  if (!roles.includes(userRole)) {
-    router.push('/login')
-    return
+    return <>{children}</>
   }
-
-  return <>{children}</>
 }

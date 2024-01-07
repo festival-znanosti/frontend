@@ -5,10 +5,11 @@ export const AUTH_BASE_URL = `${BASE_URL}/Auth` as const
 
 export const REGISTER_ROUTE = () => `${AUTH_BASE_URL}/Register` as const
 export const LOGIN_ROUTE = () => `${AUTH_BASE_URL}/Login` as const
+export const SELF_ROUTE = () => `${BASE_URL}/Account/Details` as const
+export const CHANGE_PASSWORD_ROUTE = (id: number) => `${AUTH_BASE_URL}/ChangePassword/${id}` as const
 
 // nije istestirano
 export const LOGOUT_ROUTE = () => `${AUTH_BASE_URL}/Logout` as const
-export const SELF_ROUTE = () => `${BASE_URL}/Account/Details` as const
 
 // Events
 // export const EVENTS_BASE_URL = `${BASE_URL}/Events` as const

@@ -12,7 +12,7 @@ export interface LoginBody {
 }
 
 export interface ChangePasswordBody {
-  id: number
+  accountId: number
   oldPassword: string
   newPassword: string
   confirmNewPassword: string

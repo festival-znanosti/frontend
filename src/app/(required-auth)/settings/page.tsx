@@ -17,7 +17,7 @@ import { useAccountDetails, useLogout } from '@/lib/useAccountDetails'
 
 const ChangePasswordSchema = z
   .object({
-    id: z.number().int(),
+    accountId: z.number().int(),
     oldPassword: z.string().min(8, { message: 'Upišite trenutnu lozinku.' }),
     newPassword: z.string().min(8, {
       message: 'Koristite lozinku od barem 8 znakova.',
@@ -26,7 +26,7 @@ const ChangePasswordSchema = z
   })
   .refine((data) => data.newPassword === data.confirmNewPassword, {
     message: 'Lozinke se ne podudaraju.',
-    path: ['confirmPassword'],
+    path: ['confirmNewPassword'],
   })
 
 type ChangePasswordFormData = z.infer<typeof ChangePasswordSchema>
@@ -37,7 +37,7 @@ const Settings = () => {
   const changePasswordForm = useForm<ChangePasswordFormData>({
     resolver: zodResolver(ChangePasswordSchema),
     defaultValues: {
-      id: undefined,
+      accountId: undefined,
       oldPassword: '',
       newPassword: '',
       confirmNewPassword: '',
@@ -46,13 +46,13 @@ const Settings = () => {
 
   useEffect(() => {
     if (accountDetails) {
-      changePasswordForm.setValue('id', accountDetails.id)
+      changePasswordForm.setValue('accountId', accountDetails.id)
     }
   }, [accountDetails])
 
   const changePasswordMutation = useMutation({
     mutationFn: async (data: ChangePasswordFormData) => {
-      const response = await changePassword(data, data.id)
+      const response = await changePassword(data, data.accountId)
       return response
     },
 
@@ -61,6 +61,7 @@ const Settings = () => {
         title: 'Uspjeh!',
         description: response.message,
       })
+      changePasswordForm.reset()
     },
 
     onError(error) {

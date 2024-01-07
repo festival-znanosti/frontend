@@ -95,7 +95,7 @@ const Page = () => {
     <Wizard form={form}>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex h-max min-h-full flex-1 flex-col">
-          <WizardStep>
+          {/* <WizardStep>
             <Step1 />
           </WizardStep>
           <WizardStep>
@@ -106,7 +106,7 @@ const Page = () => {
           </WizardStep>
           <WizardStep>
             <Step4 />
-          </WizardStep>
+          </WizardStep> */}
           <WizardStep>
             <Step5 />
           </WizardStep>

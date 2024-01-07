@@ -15,7 +15,7 @@ export default function Calendar() {
   const isWeekCalendar = useMediaQuery('(min-width: 1024px)')
 
   const rowHeight = 56
-  const fiveMinHeight = (rowHeight + 1) / 6
+  const fiveMinHeight = rowHeight / 6
   const rowOffsetHeight = 28
   const rowOffsetPosition = 2
 
@@ -24,20 +24,50 @@ export default function Calendar() {
     width: number
     elementRef: CalendarRef
   }
+  const roundNumber = (num: number) => {
+    return parseFloat(num.toFixed(1))
+  }
 
-  const calendarColumnWidth = isWeekCalendar ? (calendarWidth - 32) / 7 : calendarWidth // radi
+  const calendarColumnWidth = isWeekCalendar ? roundNumber((calendarWidth - 32) / 7) : roundNumber(calendarWidth)
 
-  const [position, setPosition] = useState({ x: 0, y: 0, currentColumn: 1, currentRow: 0 + rowOffsetPosition })
+  const [position, setPosition] = useState({
+    x: 0,
+    y: 0,
+    currentColumn: 1,
+    currentRow: rowOffsetPosition,
+    startTime: new Date(Date.UTC(2024, 3, 22, 10, 0, 0)),
+  })
 
-  const handleDragStop = (e: DraggableEvent, data: DraggableData) => {
+  function calculateTime(currentRow: number, currentColumn: number): Date {
+    return new Date(
+      Date.UTC(2024, 3, 22 + currentColumn - 1, 10 + Math.floor((currentRow - 2) / 12), ((currentRow - 2) % 12) * 5, 0)
+    )
+  }
+
+  const handleDragStop = (_e: DraggableEvent, data: DraggableData) => {
     const { x, y } = data
 
-    const currentColumn = Math.floor(x / calendarColumnWidth) + 1
-    const currentRow = Math.floor(y / fiveMinHeight) + 1
+    const currentColumn = Math.floor(roundNumber(x) / roundNumber(calendarColumnWidth)) + 1
+    const currentRow = Math.floor(roundNumber(y) / roundNumber(fiveMinHeight)) + rowOffsetPosition
 
-    setPosition({ x, y, currentColumn, currentRow })
-    console.log({ x, y, currentColumn, currentRow })
+    const startTime = calculateTime(currentRow, currentColumn)
+    setPosition({ x, y, currentColumn, currentRow, startTime })
   }
+
+  // useEffect(() => {
+  //   const handleResize = () => {
+  //     if (isWeekCalendar) {
+  //       const newX = position.currentColumn * roundNumber(calendarColumnWidth)
+  //       setPosition({ ...position, x: newX })
+  //     } else {
+  //       const newX = 0
+  //       setPosition({ ...position, x: newX })
+  //     }
+  //   }
+
+  //   window.addEventListener('resize', handleResize)
+  //   return () => window.removeEventListener('resize', handleResize)
+  // }, [calendarWidth])
 
   return (
     <div className="flex h-auto w-full flex-col">
@@ -244,27 +274,30 @@ export default function Calendar() {
               >
                 <Draggable
                   axis={isWeekCalendar ? 'both' : 'y'}
-                  grid={isWeekCalendar ? [calendarColumnWidth, fiveMinHeight] : undefined}
+                  grid={isWeekCalendar ? [roundNumber(calendarColumnWidth), roundNumber(fiveMinHeight)] : undefined}
                   position={position}
                   onStop={handleDragStop}
                   bounds={{
                     left: 0,
-                    right: 6 * calendarColumnWidth,
+                    right: 5 * roundNumber(calendarColumnWidth),
                     top: 0,
                     bottom: 18 * rowHeight,
                   }}
                 >
-                  <li className={cn('relative mt-px flex', 'lg:col-start-1')} style={{ gridRow: '2 / span 12' }}>
+                  <li
+                    className={cn('relative z-10 col-start-1 mt-px flex active:z-20 lg:col-start-1')}
+                    style={{ gridRow: '2 / span 12' }}
+                  >
                     <div className="group absolute inset-1 flex flex-col overflow-y-auto rounded-lg bg-blue-50 p-2 text-xs leading-5 hover:bg-blue-100">
                       <p className="order-1 font-semibold text-blue-700">Breakfast</p>
                       <p className="text-blue-500 group-hover:text-blue-700">
-                        <time dateTime="2022-01-12T06:00">6:00 AM</time>
+                        <time dateTime="2022-01-12T06:00">{position.startTime.toUTCString()}</time>
                       </p>
                     </div>
                   </li>
                 </Draggable>
 
-                <li className="relative mt-px flex lg:col-start-3" style={{ gridRow: '14 / span 30' }}>
+                <li className="relative z-10 mt-px flex lg:col-start-3" style={{ gridRow: '14 / span 30' }}>
                   <a
                     href="#"
                     className="group absolute inset-1 flex flex-col overflow-y-auto rounded-lg bg-pink-50 p-2 text-xs leading-5 hover:bg-pink-100"

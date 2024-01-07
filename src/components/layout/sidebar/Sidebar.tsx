@@ -74,7 +74,7 @@ const Sidebar = () => {
         </div>
       </aside>
 
-      <header className="visible absolute left-0 top-0 flex min-h-[80px] w-full items-center justify-between rounded-b-md bg-zinc-200 px-6 dark:bg-gray-800 sm:hidden">
+      <header className="visible absolute left-0 top-0 z-50 flex min-h-[80px] w-full items-center justify-between rounded-b-md bg-zinc-200 px-6 dark:bg-gray-800 sm:hidden">
         <Logo size="60" />
         <Sheet>
           <SheetTrigger>

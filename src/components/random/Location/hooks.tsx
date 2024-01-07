@@ -7,6 +7,9 @@ export const useParentLocations = () => {
   const { isPending, data, refetch } = useQuery({
     queryKey: ['allParentLocations'],
     queryFn: getAllParentLocations,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   })
 
   return {
@@ -35,6 +38,9 @@ export const useLocationDetails = (locationId: number) => {
     queryKey: ['locationDetails', locationId],
     queryFn: () => getLocationDetails(locationId),
     enabled: !!locationId,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   })
 
   return {

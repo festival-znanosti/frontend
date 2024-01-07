@@ -19,7 +19,7 @@ const Step1 = () => {
 
   return (
     <>
-      <div className="mt-[80px] w-full flex-1">
+      <div className="mt-[80px] w-full   flex-1 sm:mt-0">
         <PageTitle title="Obrazac za prijavu" description="Unesite informacije vezane uz događaj" />
         <br />
 

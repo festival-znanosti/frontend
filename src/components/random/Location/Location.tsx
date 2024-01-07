@@ -29,7 +29,7 @@ const Location: FC<LocationProps> = ({ value, onChange }) => {
 
   const { isPendingParent, allParentLocations, refetchParentLocations } = useParentLocations()
   const { isPendingChild, allChildLocations, refetchChildLocations } = useChildLocations(parentId!)
-  const { isPendingLocation, locationDetails, refetchLocationDetails } = useLocationDetails(value!)
+  const { locationDetails } = useLocationDetails(value!)
 
   const createParentMutation = useMutation({
     mutationFn: async (data: string) => {

@@ -9,7 +9,7 @@ const Step5 = () => {
   const { form } = useWizardContext<EventFormSchemaType>()
   return (
     <>
-      <div className="w-full flex-1">
+      <div className="mt-[80px] w-full flex-1">
         <PageTitle title="Vrijeme izvođenja događaja" description="Unesite vrijeme izvođenja događaja" />
         <br />
         <Calendar />

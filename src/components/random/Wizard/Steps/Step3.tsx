@@ -17,7 +17,7 @@ const Step3 = ({
   const { form } = useWizardContext<EventFormSchemaType>()
   return (
     <>
-      <div className="w-full flex-1">
+      <div className="mt-[80px] w-full flex-1">
         <PageTitle title="Sudionici događaja" description="Unesite informacije vezane za sudionike." />
         <br />
 

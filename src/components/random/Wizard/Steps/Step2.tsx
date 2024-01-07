@@ -11,7 +11,7 @@ const Step2 = () => {
 
   return (
     <>
-      <div className="w-full flex-1">
+      <div className="mt-[80px] w-full flex-1">
         <PageTitle title="Lokacija događaja" description="Unesite informacije vezane uz lokaciju događaja" />
         <br />
 

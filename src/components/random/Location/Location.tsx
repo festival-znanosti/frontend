@@ -1,8 +1,8 @@
 import { useMutation } from '@tanstack/react-query'
 import { Check, ChevronsUpDown } from 'lucide-react'
-import { FC, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 
-import { useChildLocations, useParentLocations } from './hooks'
+import { useChildLocations, useLocationDetails, useParentLocations } from './hooks'
 
 import { createChildLocation, createParentLocation } from '@/api/repository'
 import { Button } from '@/components/ui/button'
@@ -14,9 +14,10 @@ import { cn } from '@/lib/utils'
 
 interface LocationProps {
   value: number | undefined
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onChange: (...event: any[]) => void
 }
-const Location: FC<LocationProps> = ({ value: _value, onChange }) => {
+const Location: FC<LocationProps> = ({ value, onChange }) => {
   const [openParent, setOpenParent] = useState(false)
   const [openChild, setOpenChild] = useState(false)
 
@@ -28,6 +29,7 @@ const Location: FC<LocationProps> = ({ value: _value, onChange }) => {
 
   const { isPendingParent, allParentLocations, refetchParentLocations } = useParentLocations()
   const { isPendingChild, allChildLocations, refetchChildLocations } = useChildLocations(parentId!)
+  const { isPendingLocation, locationDetails, refetchLocationDetails } = useLocationDetails(value!)
 
   const createParentMutation = useMutation({
     mutationFn: async (data: string) => {
@@ -68,6 +70,17 @@ const Location: FC<LocationProps> = ({ value: _value, onChange }) => {
     const queryLocation = encodeURIComponent(createChildLocationState!)
     createChildMutation.mutate(queryLocation)
   }
+
+  useEffect(() => {
+    if (value) {
+      if (locationDetails?.parentLocationId) {
+        setParentId(locationDetails.parentLocationId)
+        setChildId(locationDetails.id)
+      } else {
+        setParentId(locationDetails?.id)
+      }
+    }
+  }, [])
 
   // TODO: use value to fetch location and set parent and child id
 

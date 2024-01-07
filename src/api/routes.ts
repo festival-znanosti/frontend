@@ -47,6 +47,8 @@ export const CREATE_PARENT_LOCATION_ROUTE = (locationName: string) =>
   `${LOCATION_BASE_URL}/Parent/Create?locationName=${locationName}` as const
 export const CREATE_CHILD_LOCATION_ROUTE = (locationName: string, parentLocationId: number) =>
   `${LOCATION_BASE_URL}/Child/Create?locationName=${locationName}&parentId=${parentLocationId}` as const
+export const GET_LOCATION_DETAILS_ROUTE = (locationId: number) =>
+  `${LOCATION_BASE_URL}/Details?locationId=${locationId}` as const
 
 // export const GET_CHILD_LOCATIONS_ROUTE = (parentLocationID: number) =>
 //   `${LOCATION_BASE_URL}/ChildLocations?${parentLocationID}` as const

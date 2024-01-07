@@ -29,7 +29,7 @@ export type SelfResponse = {
   role: number
 }
 
-type Location = {
+export type Location = {
   id: number
   name: string
   parentLocationId: number | null
@@ -37,7 +37,3 @@ type Location = {
 }
 
 export type AllLocationsResponse = Array<Location>
-
-export interface CreateLocationResponse {
-  message: string
-}

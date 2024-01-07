@@ -15,6 +15,7 @@ export const getAllParentLocations = () => getJson<I.AllLocationsResponse>(R.GET
 export const getAllChildLocations = (parentId: number) =>
   getJson<I.AllLocationsResponse>(R.GET_ALL_CHILD_LOCATIONS_ROUTE(parentId))
 export const createParentLocation = (locationName: string) =>
-  postJson<I.CreateLocationResponse>(R.CREATE_PARENT_LOCATION_ROUTE(locationName), {})
+  postJson<I.MessageResponse>(R.CREATE_PARENT_LOCATION_ROUTE(locationName), {})
 export const createChildLocation = (locationName: string, parentLocationId: number) =>
-  postJson<I.CreateLocationResponse>(R.CREATE_CHILD_LOCATION_ROUTE(locationName, parentLocationId), {})
+  postJson<I.MessageResponse>(R.CREATE_CHILD_LOCATION_ROUTE(locationName, parentLocationId), {})
+export const getLocationDetails = (locationId: number) => getJson<I.Location>(R.GET_LOCATION_DETAILS_ROUTE(locationId))

@@ -1,7 +1,7 @@
 'use client'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
-import router from 'next/router'
+import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -76,6 +76,7 @@ const Page = () => {
 
   const [lecturers, setLecturers] = useState<LecturerArrayType>([])
   const [firstRender, setFirstRender] = useState(true)
+  const router = useRouter()
 
   useEffect(() => {
     if (firstRender) {

@@ -20,13 +20,13 @@ interface SidebarSectionProps {
 
 const SidebarItemsAdmin: SidebarSectionProps[] = [
   {
-    pageLabels: ['Moji obrazci'],
+    pageLabels: ['Moji događaji'],
     pageIcons: [<Home key={1} />],
     pageRoutes: ['/my-forms'],
   },
   {
     sectionLabel: 'Obrazci',
-    pageLabels: ['Dodaj obrazac'],
+    pageLabels: ['Dodaj događaj'],
     pageIcons: [<FilePlus2 key={1} />],
     pageRoutes: ['/new-form'],
   },

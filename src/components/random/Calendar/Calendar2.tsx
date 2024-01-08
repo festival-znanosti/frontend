@@ -11,6 +11,15 @@ interface CalendarRef extends RefObject<HTMLOListElement> {
   current: HTMLOListElement | null
 }
 
+type TimeSlotType = {
+  id: number
+  x: number
+  y: number
+  currentColumn: number
+  currentRow: number
+  start: Date
+}
+
 export default function Calendar() {
   const isWeekCalendar = useMediaQuery('(min-width: 1024px)')
 
@@ -30,13 +39,7 @@ export default function Calendar() {
 
   const calendarColumnWidth = isWeekCalendar ? roundNumber((calendarWidth - 32) / 7) : roundNumber(calendarWidth)
 
-  const [position, setPosition] = useState({
-    x: 0,
-    y: 0,
-    currentColumn: 1,
-    currentRow: rowOffsetPosition,
-    startTime: new Date(Date.UTC(2024, 3, 22, 10, 0, 0)),
-  })
+  const [timeSlots, setTimeSlots] = useState<Array<TimeSlotType>>([])
 
   function calculateTime(currentRow: number, currentColumn: number): Date {
     return new Date(
@@ -44,27 +47,55 @@ export default function Calendar() {
     )
   }
 
-  const handleDragStop = (_e: DraggableEvent, data: DraggableData) => {
+  const handleDragStop = (_e: DraggableEvent, data: DraggableData, id: number) => {
     const { x, y } = data
 
     const currentColumn = Math.round(roundNumber(x) / roundNumber(calendarColumnWidth)) + 1
     const currentRow = Math.round(roundNumber(y) / roundNumber(fiveMinHeight)) + rowOffsetPosition
+    const start = calculateTime(currentRow, currentColumn)
 
-    const startTime = calculateTime(currentRow, currentColumn)
-    setPosition({ x, y, currentColumn, currentRow, startTime })
+    // setPosition({ x, y, currentColumn, currentRow, start })
+    setTimeSlots((prev) => {
+      return prev.map((timeSlot) => {
+        if (timeSlot.id === id) {
+          return { ...timeSlot, x, y, currentColumn, currentRow, start }
+        }
+        return timeSlot
+      })
+    })
   }
 
   useEffect(() => {
     const handleResize = () => {
-      const newX = !isWeekCalendar ? 0 : (position.currentColumn - 1) * roundNumber(calendarColumnWidth)
-      setPosition((positionBefore) => {
-        return { ...positionBefore, x: newX }
+      // const newX = !isWeekCalendar ? 0 : (position.currentColumn - 1) * roundNumber(calendarColumnWidth)
+      // setPosition((positionBefore) => {
+      //   return { ...positionBefore, x: newX }
+      // })
+      setTimeSlots((prev) => {
+        return prev.map((timeSlot) => {
+          const newX = !isWeekCalendar ? 0 : (timeSlot.currentColumn - 1) * roundNumber(calendarColumnWidth)
+          return { ...timeSlot, x: newX }
+        })
       })
     }
 
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [calendarWidth])
+
+  const addTimeSlot = () => {
+    setTimeSlots((prev) => [
+      ...prev,
+      {
+        id: timeSlots.length + 1,
+        x: 0,
+        y: 0,
+        currentColumn: 1,
+        currentRow: rowOffsetPosition,
+        start: new Date(Date.UTC(2024, 3, 22, 10, 0, 0)),
+      },
+    ])
+  }
 
   return (
     <div className="flex h-auto w-full flex-col">
@@ -95,7 +126,7 @@ export default function Calendar() {
 
         <button
           type="button"
-          // onClick={addNewEvent}
+          onClick={addTimeSlot}
           className="ml-4 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
         >
           Dodaj termin
@@ -269,53 +300,35 @@ export default function Calendar() {
                 style={{ gridTemplateRows: `${rowOffsetHeight}px repeat(120, minmax(0, 1fr)) auto` }}
                 ref={calendarRef}
               >
-                <Draggable
-                  axis={isWeekCalendar ? 'both' : 'y'}
-                  grid={isWeekCalendar ? [roundNumber(calendarColumnWidth), roundNumber(fiveMinHeight)] : undefined}
-                  position={position}
-                  onStop={handleDragStop}
-                  bounds={{
-                    left: 0,
-                    right: 5 * roundNumber(calendarColumnWidth),
-                    top: 0,
-                    bottom: 18 * rowHeight,
-                  }}
-                >
-                  <li
-                    className={cn('relative z-10 col-start-1 mt-px flex active:z-20')}
-                    style={{ gridRow: '2 / span 12' }}
-                  >
-                    <div className="group absolute inset-1 flex flex-col overflow-y-auto rounded-lg bg-blue-50 p-2 text-xs leading-5 hover:bg-blue-100">
-                      <p className="order-1 font-semibold text-blue-700">Breakfast</p>
-                      <p className="text-blue-500 group-hover:text-blue-700">
-                        <time dateTime="2022-01-12T06:00">{position.startTime.toUTCString()}</time>
-                      </p>
-                    </div>
-                  </li>
-                </Draggable>
-
-                <li className="relative z-10 mt-px flex lg:col-start-3" style={{ gridRow: '14 / span 30' }}>
-                  <a
-                    href="#"
-                    className="group absolute inset-1 flex flex-col overflow-y-auto rounded-lg bg-pink-50 p-2 text-xs leading-5 hover:bg-pink-100"
-                  >
-                    <p className="order-1 font-semibold text-pink-700">Flight to Paris</p>
-                    <p className="text-pink-500 group-hover:text-pink-700">
-                      <time dateTime="2022-01-12T07:30">7:30 AM</time>
-                    </p>
-                  </a>
-                </li>
-                <li className="relative mt-px flex lg:col-start-6" style={{ gridRow: '110 / span 12' }}>
-                  <a
-                    href="#"
-                    className="group absolute inset-1 flex flex-col overflow-y-auto rounded-lg bg-gray-100 p-2 text-xs leading-5 hover:bg-gray-200"
-                  >
-                    <p className="order-1 font-semibold text-gray-700">Meeting with design team at Disney</p>
-                    <p className="text-gray-500 group-hover:text-gray-700">
-                      <time dateTime="2022-01-15T10:00">10:00 AM</time>
-                    </p>
-                  </a>
-                </li>
+                {timeSlots.map((timeSlot) => {
+                  return (
+                    <Draggable
+                      key={timeSlot.id}
+                      axis={isWeekCalendar ? 'both' : 'y'}
+                      grid={isWeekCalendar ? [roundNumber(calendarColumnWidth), roundNumber(fiveMinHeight)] : undefined}
+                      position={{ x: timeSlot.x, y: timeSlot.y }}
+                      onStop={(e, data) => handleDragStop(e, data, timeSlot.id)}
+                      bounds={{
+                        left: 0,
+                        right: 5 * roundNumber(calendarColumnWidth),
+                        top: 0,
+                        bottom: 18 * rowHeight,
+                      }}
+                    >
+                      <li
+                        className={cn('relative z-10 col-start-1 mt-px flex active:z-20')}
+                        style={{ gridRow: '2 / span 12' }}
+                      >
+                        <div className="group absolute inset-1 flex flex-col overflow-y-auto rounded-lg bg-blue-50 p-2 text-xs leading-5 hover:bg-blue-100">
+                          <p className="order-1 font-semibold text-blue-700">Breakfast</p>
+                          <p className="text-blue-500 group-hover:text-blue-700">
+                            <time dateTime="2022-01-12T06:00">{timeSlot.start.toUTCString()}</time>
+                          </p>
+                        </div>
+                      </li>
+                    </Draggable>
+                  )
+                })}
               </ol>
             </div>
           </div>

@@ -30,3 +30,8 @@ export const GET_LOCATION_DETAILS_ROUTE = (locationId: number) =>
 const TIME_SLOTS_BASE_URL = `${BASE_URL}/TimeSlots` as const
 export const GET_AVAILABLE_TIME_SLOTS_ROUTE = (locationId: number) =>
   `${TIME_SLOTS_BASE_URL}/GetAvailableTimeSlots?locationId=${locationId}` as const
+
+// Events
+const EVENT_BASE_URL = `${BASE_URL}/Events` as const
+
+export const CREATE_EVENT_ROUTE = () => `${EVENT_BASE_URL}/Create` as const

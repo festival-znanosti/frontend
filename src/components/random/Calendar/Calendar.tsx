@@ -1,5 +1,3 @@
-import { time } from 'console'
-
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { RefObject, useEffect, useState } from 'react'
 import Draggable, { DraggableEvent } from 'react-draggable'
@@ -142,29 +140,29 @@ export default function Calendar({ locationId }: { locationId: number }) {
   const { form } = useWizardContext<EventFormSchemaType>()
 
   useEffect(() => {
-    const timeSlotsForForm = timeSlots.map((timeSlot) => {
-      return {
-        id:
-          availableTimeSlots!.find(
-            (availableTimeSlot) =>
-              // TODO: fix kad matej doda Z
-              new Date(
-                Date.UTC(
-                  // @ts-ignore
-                  availableTimeSlot.start.slice(0, 4),
-                  // @ts-ignore
-                  availableTimeSlot.start.slice(5, 7) - 1,
-                  availableTimeSlot.start.slice(8, 10),
-                  availableTimeSlot.start.slice(11, 13),
-                  availableTimeSlot.start.slice(14, 16),
-                  availableTimeSlot.start.slice(17, 19)
-                )
-              ).getTime() === timeSlot.start.getTime()
-          )?.id ?? timeSlot.id,
-        start: timeSlot.start.toISOString(),
-      }
-    })
-    form.setValue('timeSlots', timeSlotsForForm)
+    const timeSlotsForForm = timeSlots.map(
+      (timeSlot) =>
+        // return {
+        availableTimeSlots!.find(
+          (availableTimeSlot) =>
+            // TODO: fix kad matej doda Z
+            new Date(
+              Date.UTC(
+                // @ts-ignore
+                availableTimeSlot.start.slice(0, 4),
+                // @ts-ignore
+                availableTimeSlot.start.slice(5, 7) - 1,
+                availableTimeSlot.start.slice(8, 10),
+                availableTimeSlot.start.slice(11, 13),
+                availableTimeSlot.start.slice(14, 16),
+                availableTimeSlot.start.slice(17, 19)
+              )
+            ).getTime() === timeSlot.start.getTime()
+        )?.id ?? timeSlot.id
+      // start: timeSlot.start.toISOString(),
+      // }
+    )
+    form.setValue('timeSlotIds', timeSlotsForForm)
   }, [timeSlots])
 
   return (

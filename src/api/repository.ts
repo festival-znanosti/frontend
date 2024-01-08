@@ -2,6 +2,8 @@ import { getJson, postJson, putJson } from './api'
 import * as I from './interface'
 import * as R from './routes'
 
+import { EventFormSchemaType } from '@/app/(required-auth)/new-form/page'
+
 // Auth
 export const register = (body: I.RegisterBody) => postJson<I.MessageResponse>(R.REGISTER_ROUTE(), body)
 export const login = (body: I.LoginBody) => postJson<I.MessageResponse>(R.LOGIN_ROUTE(), body)
@@ -23,3 +25,6 @@ export const getLocationDetails = (locationId: number) => getJson<I.Location>(R.
 // Time slots
 export const getAvailableTimeSlots = (locationId: number) =>
   getJson<I.AvailableTimeSlotsResponse>(R.GET_AVAILABLE_TIME_SLOTS_ROUTE(locationId))
+
+// Events
+export const createEvent = (body: EventFormSchemaType) => postJson<I.MessageResponse>(R.CREATE_EVENT_ROUTE(), body)

@@ -1,9 +1,12 @@
 'use client'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation } from '@tanstack/react-query'
+import router from 'next/router'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
+import { createEvent } from '@/api/repository'
 import { LecturerArrayType, LecturerSchema } from '@/components/random/Lecturers/Lecturers'
 import Step1, { EventType } from '@/components/random/Wizard/Steps/Step1'
 import Step2 from '@/components/random/Wizard/Steps/Step2'
@@ -47,7 +50,8 @@ const EventFormSchema = z
       .refine((lecturers) => lecturers.some((lec) => lec.type === 0), 'Morate dodati glavnog sudionika'),
     equipment: z.string().optional(),
     summary: z.string().optional(),
-    timeSlots: z.array(z.object({ id: z.number(), start: z.string() })).min(1, 'Odaberite barem jedan termin'),
+    // timeSlots: z.array(z.object({ id: z.number(), start: z.string() })).min(1, 'Odaberite barem jedan termin'),
+    timeSlotIds: z.array(z.number()).min(1, 'Odaberite barem jedan termin'),
   })
   .refine((data) => !isNaN(data.visitorsCount), {
     message: 'Broj posjetitelja mora biti broj',
@@ -65,7 +69,8 @@ const Page = () => {
       lecturers: [],
       equipment: '',
       summary: '',
-      timeSlots: [],
+      // timeSlots: [],
+      timeSlotIds: [],
     },
   })
 
@@ -82,15 +87,40 @@ const Page = () => {
     }
   }, [lecturers])
 
+  const createEventMutation = useMutation({
+    mutationFn: async (data: EventFormSchemaType) => {
+      const response = await createEvent(data)
+      return response
+    },
+
+    onSuccess(response) {
+      toast({
+        title: 'Uspjesno ste kreirali događaj!',
+        description: response.message,
+      })
+
+      router.push('/my-forms')
+    },
+
+    onError(error) {
+      toast({
+        title: 'Greška',
+        description: error.message,
+        variant: 'destructive',
+      })
+    },
+  })
+
   function onSubmit(data: z.infer<typeof EventFormSchema>) {
-    toast({
-      title: 'You submitted the following values:',
-      description: (
-        <pre className="mt-2 w-[340px] select-text overflow-scroll rounded-md bg-slate-950 p-4">
-          <code className=" h-full select-text overflow-auto text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    })
+    // toast({
+    //   title: 'You submitted the following values:',
+    //   description: (
+    //     <pre className="mt-2 w-[340px] select-text overflow-scroll rounded-md bg-slate-950 p-4">
+    //       <code className=" h-full select-text overflow-auto text-white">{JSON.stringify(data, null, 2)}</code>
+    //     </pre>
+    //   ),
+    // })
+    createEventMutation.mutate(data)
   }
 
   return (

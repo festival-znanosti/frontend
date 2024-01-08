@@ -3,6 +3,16 @@ import { RefObject, useEffect, useState } from 'react'
 import Draggable, { DraggableEvent } from 'react-draggable'
 import { DraggableData } from 'react-draggable'
 
+import {
+  DATES_OF_FESTIVAL,
+  getDayFirstLetterCroatian,
+  getDayFirstThreeLettersCroatian,
+  getDayNumber,
+  getNextDay,
+  getPreviousDay,
+  returnOrdinalNumberOfDate,
+} from './dateFunctions'
+
 import { Button } from '@/components/ui/button'
 import useElementSize from '@/lib/useElementSize'
 import { useMediaQuery } from '@/lib/useMediaQuery'
@@ -19,54 +29,6 @@ type TimeSlotType = {
   currentColumn: number
   currentRow: number
   start: Date
-}
-
-const DATES_OF_FESTIVAL = [
-  new Date(Date.UTC(2024, 3, 22)),
-  new Date(Date.UTC(2024, 3, 23)),
-  new Date(Date.UTC(2024, 3, 24)),
-  new Date(Date.UTC(2024, 3, 25)),
-  new Date(Date.UTC(2024, 3, 26)),
-  new Date(Date.UTC(2024, 3, 27)),
-  new Date(Date.UTC(2024, 3, 28)),
-] as const
-
-const daysCroatian = ['Nedjelja', 'Ponedjeljak', 'Utorak', 'Srijeda', 'Četvrtak', 'Petak', 'Subota']
-
-const getDayFirstLetterCroatian = (date: Date) => {
-  const dayIndex = date.getUTCDay()
-  return daysCroatian[dayIndex][0].toUpperCase()
-}
-
-const getDayNumber = (date: Date) => {
-  return date.getUTCDate()
-}
-
-const getDayFirstThreeLettersCroatian = (date: Date) => {
-  const dayIndex = date.getUTCDay()
-  return daysCroatian[dayIndex].slice(0, 3)
-}
-
-const getNextDay = (date: Date) => {
-  const nextDay = new Date(date)
-  nextDay.setUTCDate(date.getUTCDate() + 1)
-
-  if (DATES_OF_FESTIVAL[DATES_OF_FESTIVAL.length - 1].getTime() <= nextDay.getTime()) {
-    return
-  }
-
-  return nextDay
-}
-
-const getPreviousDay = (date: Date) => {
-  const previousDay = new Date(date)
-  previousDay.setUTCDate(date.getUTCDate() - 1)
-
-  if (DATES_OF_FESTIVAL[0].getTime() > previousDay.getTime()) {
-    return
-  }
-
-  return previousDay
 }
 
 export default function Calendar() {
@@ -328,7 +290,10 @@ export default function Calendar() {
                       }}
                     >
                       <li
-                        className={cn('relative z-10 col-start-1 mt-px flex active:z-20')}
+                        className={cn(
+                          'relative z-10 col-start-1 mt-px flex active:z-20',
+                          timeSlot.currentColumn !== returnOrdinalNumberOfDate(selectedDate) && 'hidden lg:flex'
+                        )}
                         style={{ gridRow: '2 / span 12' }}
                       >
                         <div className="group absolute inset-1 flex flex-col overflow-y-auto rounded-lg bg-blue-50 p-2 text-xs leading-5 hover:bg-blue-100">

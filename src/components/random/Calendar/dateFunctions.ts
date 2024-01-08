@@ -51,21 +51,6 @@ export const getPreviousDay = (date: Date) => {
   return previousDay
 }
 
-export const formatTimeCroatian = (date: Date) => {
-  if (!(date instanceof Date)) {
-    date = new Date(date)
-  }
-
-  const hoursStart = date.getHours().toString().padStart(2, '0')
-  const minutesStart = date.getMinutes().toString().padStart(2, '0')
-
-  const hoursEnd = (date.getHours() + 1).toString().padStart(2, '0')
-  const minutesEnd = date.getMinutes().toString().padStart(2, '0')
-
-  // Format as "HH:mm-HH:mm"
-  return `${hoursStart}:${minutesStart}-${hoursEnd}:${minutesEnd}`
-}
-
 export const returnOrdinalNumberOfDate = (date: Date) => {
   date.setUTCHours(0, 0, 0, 0)
   return DATES_OF_FESTIVAL.findIndex((d) => d.getTime() === date.getTime()) + 1
@@ -76,4 +61,46 @@ export const returnStartRowIndexOfDate = (date: Date) => {
   const hours = date.getUTCHours() - 10 + 2
   const minutes = date.getUTCMinutes()
   return (hours * 60 + minutes) / 5 + 2
+}
+
+export const formatTimeCroatian = (dateStart: Date, dateEnd: Date) => {
+  if (!(dateStart instanceof Date)) {
+    dateStart = new Date(dateStart)
+  }
+
+  const hoursStart = dateStart.getHours().toString().padStart(2, '0')
+  const minutesStart = dateStart.getMinutes().toString().padStart(2, '0')
+
+  const hoursEnd = dateEnd.getHours().toString().padStart(2, '0')
+  const minutesEnd = dateEnd.getMinutes().toString().padStart(2, '0')
+
+  // Format as "HH:mm-HH:mm"
+  return `${hoursStart}:${minutesStart}-${hoursEnd}:${minutesEnd}`
+}
+
+export const getRowSpanDependingOnLocationId = (locationId: number) => {
+  if (locationId === 2 || locationId === 4) {
+    return 6 // 30 min
+  }
+
+  if (locationId === 3) {
+    return 9 // 45 min
+  }
+
+  return 12 // 60 min
+}
+
+export const getEndTime = (date: Date, locationId: number) => {
+  const hours = date.getHours()
+  const minutes = date.getMinutes()
+
+  if (locationId === 2 || locationId === 4) {
+    return new Date(date.setMinutes(minutes + 30))
+  }
+
+  if (locationId === 3) {
+    return new Date(date.setMinutes(minutes + 45))
+  }
+
+  return new Date(date.setHours(hours + 1))
 }

@@ -10,8 +10,10 @@ import {
   getDayFirstLetterCroatian,
   getDayFirstThreeLettersCroatian,
   getDayNumber,
+  getEndTime,
   getNextDay,
   getPreviousDay,
+  getRowSpanDependingOnLocationId,
   returnOrdinalNumberOfDate,
   returnStartRowIndexOfDate,
   rowHeight,
@@ -36,6 +38,8 @@ type TimeSlotType = {
   currentColumn: number
   currentRow: number
   start: Date
+  end: Date
+  rowSpan: number
 }
 
 export default function Calendar({ locationId }: { locationId: number }) {
@@ -76,6 +80,7 @@ export default function Calendar({ locationId }: { locationId: number }) {
               y: Math.round(roundNumber(y) / roundNumber(fiveMinHeight)) * roundNumber(fiveMinHeight),
               currentRow: newRow,
               start: calculateTime(newRow, timeSlot.currentColumn),
+              end: getEndTime(calculateTime(newRow, timeSlot.currentColumn), locationId),
             }
           }
 
@@ -86,6 +91,7 @@ export default function Calendar({ locationId }: { locationId: number }) {
             currentColumn: newColumn,
             currentRow: newRow,
             start: calculateTime(newRow, newColumn),
+            end: getEndTime(calculateTime(newRow, newColumn), locationId),
           }
         }
 
@@ -118,6 +124,8 @@ export default function Calendar({ locationId }: { locationId: number }) {
         currentColumn: 1,
         currentRow: rowOffsetPosition,
         start: new Date(Date.UTC(2024, 3, 22, 10, 0, 0)),
+        end: getEndTime(new Date(Date.UTC(2024, 3, 22, 10, 0, 0)), locationId),
+        rowSpan: getRowSpanDependingOnLocationId(locationId),
       },
     ])
   }
@@ -341,12 +349,14 @@ export default function Calendar({ locationId }: { locationId: number }) {
                           'relative z-10 col-start-1 mt-px flex active:z-20',
                           timeSlot.currentColumn !== returnOrdinalNumberOfDate(selectedDate) && 'hidden lg:flex'
                         )}
-                        style={{ gridRow: '2 / span 12' }}
+                        style={{ gridRow: `2 / span ${timeSlot.rowSpan}` }}
                       >
                         <div className="group absolute inset-1 flex flex-col overflow-y-auto rounded-lg bg-blue-50 p-2 text-xs leading-5 hover:bg-blue-100">
-                          <p className="order-1 font-semibold text-blue-700">Breakfast</p>
+                          <p className="order-1 font-semibold text-blue-700">{'Termin ' + timeSlot.id}</p>
                           <p className="text-blue-500 group-hover:text-blue-700">
-                            <time dateTime="2022-01-12T06:00">{formatTimeCroatian(timeSlot.start)}</time>
+                            <time dateTime={timeSlot.start.toISOString()}>
+                              {formatTimeCroatian(timeSlot.start, timeSlot.end)}
+                            </time>
                           </p>
                         </div>
                       </li>

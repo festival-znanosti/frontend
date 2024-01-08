@@ -40,7 +40,7 @@ export type AllLocationsResponse = Array<Location>
 
 export type TimeSlot = {
   id: number
-  start: Date
+  start: string
 }
 
 export type AvailableTimeSlotsResponse = Array<TimeSlot>

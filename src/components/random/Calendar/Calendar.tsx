@@ -1,3 +1,5 @@
+import { time } from 'console'
+
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { RefObject, useEffect, useState } from 'react'
 import Draggable, { DraggableEvent } from 'react-draggable'
@@ -22,7 +24,9 @@ import {
   rowOffsetPosition,
 } from './dateFunctions'
 import { useAvailableTimeSlots } from './hooks'
+import { useWizardContext } from '../Wizard/Wizard.context'
 
+import { EventFormSchemaType } from '@/app/(required-auth)/new-form/page'
 import { Button } from '@/components/ui/button'
 import useElementSize from '@/lib/useElementSize'
 import { useMediaQuery } from '@/lib/useMediaQuery'
@@ -135,7 +139,34 @@ export default function Calendar({ locationId }: { locationId: number }) {
 
   const { availableTimeSlots, isPendingAvailableTimeSlots } = useAvailableTimeSlots(locationId)
 
-  useEffect(() => {}, [availableTimeSlots])
+  const { form } = useWizardContext<EventFormSchemaType>()
+
+  useEffect(() => {
+    const timeSlotsForForm = timeSlots.map((timeSlot) => {
+      return {
+        id:
+          availableTimeSlots!.find(
+            (availableTimeSlot) =>
+              // TODO: fix kad matej doda Z
+              new Date(
+                Date.UTC(
+                  // @ts-ignore
+                  availableTimeSlot.start.slice(0, 4),
+                  // @ts-ignore
+                  availableTimeSlot.start.slice(5, 7) - 1,
+                  availableTimeSlot.start.slice(8, 10),
+                  availableTimeSlot.start.slice(11, 13),
+                  availableTimeSlot.start.slice(14, 16),
+                  availableTimeSlot.start.slice(17, 19)
+                )
+              ).getTime() === timeSlot.start.getTime()
+          )?.id ?? timeSlot.id,
+        start: timeSlot.start.toISOString(),
+      }
+    })
+    form.setValue('timeSlots', timeSlotsForForm)
+  }, [timeSlots])
+
   return (
     <div className="flex h-auto w-full flex-col">
       {/** Buttons above calendar */}
@@ -331,7 +362,6 @@ export default function Calendar({ locationId }: { locationId: number }) {
                   })}
 
                 {timeSlots.map((timeSlot) => {
-                  console.log(timeSlot)
                   return (
                     <Draggable
                       key={timeSlot.id}

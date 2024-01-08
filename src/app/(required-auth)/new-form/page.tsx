@@ -47,6 +47,7 @@ const EventFormSchema = z
       .refine((lecturers) => lecturers.some((lec) => lec.type === 0), 'Morate dodati glavnog sudionika'),
     equipment: z.string().optional(),
     summary: z.string().optional(),
+    timeSlots: z.array(z.object({ id: z.number(), start: z.string() })).min(1, 'Odaberite barem jedan termin'),
   })
   .refine((data) => !isNaN(data.visitorsCount), {
     message: 'Broj posjetitelja mora biti broj',
@@ -64,6 +65,7 @@ const Page = () => {
       lecturers: [],
       equipment: '',
       summary: '',
+      timeSlots: [],
     },
   })
 
@@ -95,18 +97,18 @@ const Page = () => {
     <Wizard form={form}>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex h-max min-h-full flex-1 flex-col">
-          {/* <WizardStep>
+          <WizardStep>
             <Step1 />
-          </WizardStep> */}
+          </WizardStep>
           <WizardStep>
             <Step2 />
           </WizardStep>
-          {/*  <WizardStep>
+          <WizardStep>
             <Step3 lecturers={lecturers} setLecturers={setLecturers} />
           </WizardStep>
           <WizardStep>
             <Step4 />
-          </WizardStep> */}
+          </WizardStep>
           <WizardStep>
             <Step5 />
           </WizardStep>

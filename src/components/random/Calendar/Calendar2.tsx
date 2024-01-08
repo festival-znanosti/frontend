@@ -25,7 +25,7 @@ export default function Calendar() {
     elementRef: CalendarRef
   }
   const roundNumber = (num: number) => {
-    return parseFloat(num.toFixed(1))
+    return parseFloat(num.toFixed(3))
   }
 
   const calendarColumnWidth = isWeekCalendar ? roundNumber((calendarWidth - 32) / 7) : roundNumber(calendarWidth)
@@ -48,7 +48,7 @@ export default function Calendar() {
     const { x, y } = data
 
     const currentColumn = Math.round(roundNumber(x) / roundNumber(calendarColumnWidth)) + 1
-    const currentRow = Math.floor(roundNumber(y) / roundNumber(fiveMinHeight)) + rowOffsetPosition
+    const currentRow = Math.round(roundNumber(y) / roundNumber(fiveMinHeight)) + rowOffsetPosition
 
     const startTime = calculateTime(currentRow, currentColumn)
     setPosition({ x, y, currentColumn, currentRow, startTime })

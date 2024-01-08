@@ -331,6 +331,7 @@ export default function Calendar({ locationId }: { locationId: number }) {
                   })}
 
                 {timeSlots.map((timeSlot) => {
+                  console.log(timeSlot)
                   return (
                     <Draggable
                       key={timeSlot.id}

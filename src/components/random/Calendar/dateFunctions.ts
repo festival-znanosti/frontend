@@ -64,15 +64,11 @@ export const returnStartRowIndexOfDate = (date: Date) => {
 }
 
 export const formatTimeCroatian = (dateStart: Date, dateEnd: Date) => {
-  if (!(dateStart instanceof Date)) {
-    dateStart = new Date(dateStart)
-  }
+  const hoursStart = dateStart.getUTCHours().toString().padStart(2, '0')
+  const minutesStart = dateStart.getUTCMinutes().toString().padStart(2, '0')
 
-  const hoursStart = dateStart.getHours().toString().padStart(2, '0')
-  const minutesStart = dateStart.getMinutes().toString().padStart(2, '0')
-
-  const hoursEnd = dateEnd.getHours().toString().padStart(2, '0')
-  const minutesEnd = dateEnd.getMinutes().toString().padStart(2, '0')
+  const hoursEnd = dateEnd.getUTCHours().toString().padStart(2, '0')
+  const minutesEnd = dateEnd.getUTCMinutes().toString().padStart(2, '0')
 
   // Format as "HH:mm-HH:mm"
   return `${hoursStart}:${minutesStart}-${hoursEnd}:${minutesEnd}`

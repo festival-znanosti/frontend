@@ -3,6 +3,7 @@ import { RefObject, useEffect, useState } from 'react'
 import Draggable, { DraggableEvent } from 'react-draggable'
 import { DraggableData } from 'react-draggable'
 
+import { Button } from '@/components/ui/button'
 import useElementSize from '@/lib/useElementSize'
 import { useMediaQuery } from '@/lib/useMediaQuery'
 import { cn } from '@/lib/utils'
@@ -18,6 +19,54 @@ type TimeSlotType = {
   currentColumn: number
   currentRow: number
   start: Date
+}
+
+const DATES_OF_FESTIVAL = [
+  new Date(Date.UTC(2024, 3, 22)),
+  new Date(Date.UTC(2024, 3, 23)),
+  new Date(Date.UTC(2024, 3, 24)),
+  new Date(Date.UTC(2024, 3, 25)),
+  new Date(Date.UTC(2024, 3, 26)),
+  new Date(Date.UTC(2024, 3, 27)),
+  new Date(Date.UTC(2024, 3, 28)),
+] as const
+
+const daysCroatian = ['Nedjelja', 'Ponedjeljak', 'Utorak', 'Srijeda', 'Četvrtak', 'Petak', 'Subota']
+
+const getDayFirstLetterCroatian = (date: Date) => {
+  const dayIndex = date.getUTCDay()
+  return daysCroatian[dayIndex][0].toUpperCase()
+}
+
+const getDayNumber = (date: Date) => {
+  return date.getUTCDate()
+}
+
+const getDayFirstThreeLettersCroatian = (date: Date) => {
+  const dayIndex = date.getUTCDay()
+  return daysCroatian[dayIndex].slice(0, 3)
+}
+
+const getNextDay = (date: Date) => {
+  const nextDay = new Date(date)
+  nextDay.setUTCDate(date.getUTCDate() + 1)
+
+  if (DATES_OF_FESTIVAL[DATES_OF_FESTIVAL.length - 1].getTime() <= nextDay.getTime()) {
+    return
+  }
+
+  return nextDay
+}
+
+const getPreviousDay = (date: Date) => {
+  const previousDay = new Date(date)
+  previousDay.setUTCDate(date.getUTCDate() - 1)
+
+  if (DATES_OF_FESTIVAL[0].getTime() > previousDay.getTime()) {
+    return
+  }
+
+  return previousDay
 }
 
 export default function Calendar() {
@@ -40,6 +89,7 @@ export default function Calendar() {
   const calendarColumnWidth = isWeekCalendar ? roundNumber((calendarWidth - 32) / 7) : roundNumber(calendarWidth)
 
   const [timeSlots, setTimeSlots] = useState<Array<TimeSlotType>>([])
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date(Date.UTC(2024, 3, 22)))
 
   function calculateTime(currentRow: number, currentColumn: number): Date {
     return new Date(
@@ -54,7 +104,6 @@ export default function Calendar() {
     const currentRow = Math.round(roundNumber(y) / roundNumber(fiveMinHeight)) + rowOffsetPosition
     const start = calculateTime(currentRow, currentColumn)
 
-    // setPosition({ x, y, currentColumn, currentRow, start })
     setTimeSlots((prev) => {
       return prev.map((timeSlot) => {
         if (timeSlot.id === id) {
@@ -67,10 +116,6 @@ export default function Calendar() {
 
   useEffect(() => {
     const handleResize = () => {
-      // const newX = !isWeekCalendar ? 0 : (position.currentColumn - 1) * roundNumber(calendarColumnWidth)
-      // setPosition((positionBefore) => {
-      //   return { ...positionBefore, x: newX }
-      // })
       setTimeSlots((prev) => {
         return prev.map((timeSlot) => {
           const newX = !isWeekCalendar ? 0 : (timeSlot.currentColumn - 1) * roundNumber(calendarColumnWidth)
@@ -101,112 +146,79 @@ export default function Calendar() {
     <div className="flex h-auto w-full flex-col">
       {/** Buttons above calendar */}
       <div className="flex flex-none items-center justify-end border-b border-gray-200 px-6 py-4">
-        <div className="relative flex items-center rounded-md bg-white shadow-sm">
-          <button
+        <div className="relative flex items-center rounded-md bg-white shadow-sm lg:hidden">
+          <Button
             type="button"
-            className="flex h-9 w-12 items-center justify-center rounded-l-md border-y border-l border-gray-300 pr-1 text-gray-400 hover:text-gray-500 focus:relative md:w-9 md:pr-0 md:hover:bg-gray-50"
+            className="w-16 rounded-r-none pl-2 pr-6"
+            onClick={() => {
+              const previousDay = getPreviousDay(selectedDate)
+              if (!previousDay) return
+              setSelectedDate(previousDay)
+            }}
           >
             <span className="sr-only">Dan prije</span>
-            <ChevronLeft className="h-5 w-5" aria-hidden="true" />
-          </button>
-          <button
+            <ChevronLeft aria-hidden="true" />
+          </Button>
+          <Button
             type="button"
-            className="block h-9  border-y border-gray-300 px-3.5 text-sm font-semibold text-gray-900 hover:bg-gray-50 focus:relative "
-          >
-            Danas
-          </button>
-          <button
-            type="button"
-            className="flex h-9 w-12 items-center justify-center rounded-r-md border-y border-r border-gray-300 pl-1 text-gray-400 hover:text-gray-500 focus:relative md:w-9 md:pl-0 md:hover:bg-gray-50"
+            className="w-16 rounded-l-none pl-6 pr-2"
+            onClick={() => {
+              const nextDay = getNextDay(selectedDate)
+              if (!nextDay) return
+              setSelectedDate(nextDay)
+            }}
           >
             <span className="sr-only">Dan poslije</span>
-            <ChevronRight className="h-5 w-5" aria-hidden="true" />
-          </button>
+            <ChevronRight aria-hidden="true" />
+          </Button>
         </div>
 
-        <button
-          type="button"
-          onClick={addTimeSlot}
-          className="ml-4 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-        >
+        <Button type="button" onClick={addTimeSlot} className="ml-4">
           Dodaj termin
-        </button>
+        </Button>
       </div>
       <div className="isolate flex flex-auto flex-col overflow-auto bg-white">
         <div className="flex  flex-none flex-col overflow-clip">
           <div className="sticky top-0 z-30 flex-none bg-white shadow ring-1 ring-black ring-opacity-5 ">
             {/* Calendar labels small screen */}
             <div className="grid grid-cols-7 text-sm leading-6 text-gray-500 lg:hidden">
-              <button type="button" className="flex flex-col items-center pb-3 pt-2">
-                P <span className="mt-1 flex h-8 w-8 items-center justify-center font-semibold text-gray-900">22</span>
-              </button>
-              <button type="button" className="flex flex-col items-center pb-3 pt-2">
-                U <span className="mt-1 flex h-8 w-8 items-center justify-center font-semibold text-gray-900">23</span>
-              </button>
-              <button type="button" className="flex flex-col items-center pb-3 pt-2">
-                S
-                <span className="mt-1 flex h-8 w-8 items-center justify-center rounded-full bg-indigo-600 font-semibold text-white">
-                  24
-                </span>
-              </button>
-              <button type="button" className="flex flex-col items-center pb-3 pt-2">
-                Č <span className="mt-1 flex h-8 w-8 items-center justify-center font-semibold text-gray-900">25</span>
-              </button>
-              <button type="button" className="flex flex-col items-center pb-3 pt-2">
-                P <span className="mt-1 flex h-8 w-8 items-center justify-center font-semibold text-gray-900">26</span>
-              </button>
-              <button type="button" className="flex flex-col items-center pb-3 pt-2">
-                S <span className="mt-1 flex h-8 w-8 items-center justify-center font-semibold text-gray-900">27</span>
-              </button>
-              <button type="button" className="flex flex-col items-center pb-3 pt-2">
-                N <span className="mt-1 flex h-8 w-8 items-center justify-center font-semibold text-gray-900">28</span>
-              </button>
+              {DATES_OF_FESTIVAL.map((date) => {
+                return (
+                  <div className="flex flex-col items-center pb-2 pt-3" key={date.getDay()}>
+                    {getDayFirstLetterCroatian(date)}
+                    <span
+                      className={cn(
+                        'mt-1 flex h-8 w-8 items-center justify-center font-semibold text-gray-900',
+                        selectedDate.getTime() === date.getTime() && 'rounded-full bg-red-600 text-white'
+                      )}
+                    >
+                      {getDayNumber(date)}
+                    </span>
+                  </div>
+                )
+              })}
             </div>
 
             {/* Calendar labels large screen */}
             <div className="-mr-px hidden grid-cols-7 divide-x divide-gray-100 border border-r border-gray-100 text-sm leading-6 text-gray-500 lg:grid">
               <div className="col-end-1 w-[55px]" />
-              <div className="flex items-center justify-center py-3">
-                <span>
-                  Pon <span className="items-center justify-center font-semibold text-gray-900">22</span>
-                </span>
-              </div>
-              <div className="flex items-center justify-center py-3">
-                <span className="flex items-baseline">
-                  Uto
-                  <span className="ml-1.5 flex h-8 w-8 items-center justify-center rounded-full bg-indigo-600 font-semibold text-white">
-                    23
-                  </span>
-                </span>
-              </div>
-              <div className="flex items-center justify-center py-3">
-                <span className="flex items-baseline">
-                  Sri
-                  <span className="ml-1.5 flex h-8 w-8 items-center justify-center rounded-full bg-indigo-600 font-semibold text-white">
-                    24
-                  </span>
-                </span>
-              </div>
-              <div className="flex items-center justify-center py-3">
-                <span>
-                  Čet <span className="items-center justify-center font-semibold text-gray-900">25</span>
-                </span>
-              </div>
-              <div className="flex items-center justify-center py-3">
-                <span>
-                  Pet <span className="items-center justify-center font-semibold text-gray-900">26</span>
-                </span>
-              </div>
-              <div className="flex items-center justify-center py-3">
-                <span>
-                  Sub <span className="items-center justify-center font-semibold text-gray-900">27</span>
-                </span>
-              </div>
-              <div className="flex items-center justify-center py-3">
-                <span>
-                  Ned <span className="items-center justify-center font-semibold text-gray-900">28</span>
-                </span>
-              </div>
+              {DATES_OF_FESTIVAL.map((date) => {
+                return (
+                  <div className="flex items-center justify-center py-3" key={date.getDate()}>
+                    <span className="flex items-baseline">
+                      {getDayFirstThreeLettersCroatian(date)}
+                      <span
+                        className={cn(
+                          'ml-1.5 flex h-8 w-8 items-center justify-center rounded-full  font-semibold text-black'
+                        )}
+                      >
+                        {getDayNumber(date)}
+                      </span>
+                    </span>
+                  </div>
+                )
+              })}
+
               <div className="col-start-8 w-8" />
             </div>
           </div>

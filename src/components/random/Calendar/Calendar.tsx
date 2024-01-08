@@ -5,13 +5,20 @@ import { DraggableData } from 'react-draggable'
 
 import {
   DATES_OF_FESTIVAL,
+  fiveMinHeight,
+  formatTimeCroatian,
   getDayFirstLetterCroatian,
   getDayFirstThreeLettersCroatian,
   getDayNumber,
   getNextDay,
   getPreviousDay,
   returnOrdinalNumberOfDate,
+  returnStartRowIndexOfDate,
+  rowHeight,
+  rowOffsetHeight,
+  rowOffsetPosition,
 } from './dateFunctions'
+import { useAvailableTimeSlots } from './hooks'
 
 import { Button } from '@/components/ui/button'
 import useElementSize from '@/lib/useElementSize'
@@ -31,13 +38,8 @@ type TimeSlotType = {
   start: Date
 }
 
-export default function Calendar() {
+export default function Calendar({ locationId }: { locationId: number }) {
   const isWeekCalendar = useMediaQuery('(min-width: 1024px)')
-
-  const rowHeight = 56
-  const fiveMinHeight = rowHeight / 6
-  const rowOffsetHeight = 28
-  const rowOffsetPosition = 2
 
   const { width: calendarWidth, elementRef: calendarRef } = useElementSize() as {
     height: number
@@ -120,6 +122,9 @@ export default function Calendar() {
     ])
   }
 
+  const { availableTimeSlots, isPendingAvailableTimeSlots } = useAvailableTimeSlots(locationId)
+
+  useEffect(() => {}, [availableTimeSlots])
   return (
     <div className="flex h-auto w-full flex-col">
       {/** Buttons above calendar */}
@@ -290,6 +295,32 @@ export default function Calendar() {
                 style={{ gridTemplateRows: `${rowOffsetHeight}px repeat(120, minmax(0, 1fr)) auto` }}
                 ref={calendarRef}
               >
+                {!isPendingAvailableTimeSlots &&
+                  availableTimeSlots!.map((timeSlot) => {
+                    return (
+                      <li
+                        key={timeSlot.id}
+                        className={cn(
+                          'relative z-10 col-start-1 mt-px flex active:z-20',
+                          'lg:col-start-' + returnOrdinalNumberOfDate(new Date(timeSlot.start)).toString(),
+                          returnOrdinalNumberOfDate(new Date(timeSlot.start)) !==
+                            returnOrdinalNumberOfDate(selectedDate) && 'hidden lg:flex'
+                        )}
+                        style={{ gridRow: `${returnStartRowIndexOfDate(new Date(timeSlot.start))} / span 12` }}
+                      >
+                        <div
+                          className={cn(
+                            'group absolute inset-1 flex items-center justify-center overflow-y-auto rounded-lg bg-green-100 p-2 text-xs leading-5 hover:bg-blue-100',
+                            availableTimeSlots?.find((t) => t.id === timeSlot.id - 1) && 'rounded-t-none',
+                            availableTimeSlots?.find((t) => t.id === timeSlot.id + 1) && 'rounded-b-none'
+                          )}
+                        >
+                          <p className="order-1 text-green-800">Slobodno</p>
+                        </div>
+                      </li>
+                    )
+                  })}
+
                 {timeSlots.map((timeSlot) => {
                   return (
                     <Draggable
@@ -315,7 +346,7 @@ export default function Calendar() {
                         <div className="group absolute inset-1 flex flex-col overflow-y-auto rounded-lg bg-blue-50 p-2 text-xs leading-5 hover:bg-blue-100">
                           <p className="order-1 font-semibold text-blue-700">Breakfast</p>
                           <p className="text-blue-500 group-hover:text-blue-700">
-                            <time dateTime="2022-01-12T06:00">{timeSlot.start.toUTCString()}</time>
+                            <time dateTime="2022-01-12T06:00">{formatTimeCroatian(timeSlot.start)}</time>
                           </p>
                         </div>
                       </li>

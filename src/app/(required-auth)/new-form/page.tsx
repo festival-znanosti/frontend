@@ -97,11 +97,11 @@ const Page = () => {
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex h-max min-h-full flex-1 flex-col">
           {/* <WizardStep>
             <Step1 />
-          </WizardStep>
+          </WizardStep> */}
           <WizardStep>
             <Step2 />
           </WizardStep>
-          <WizardStep>
+          {/*  <WizardStep>
             <Step3 lecturers={lecturers} setLecturers={setLecturers} />
           </WizardStep>
           <WizardStep>

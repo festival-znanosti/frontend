@@ -19,3 +19,7 @@ export const createParentLocation = (locationName: string) =>
 export const createChildLocation = (locationName: string, parentLocationId: number) =>
   postJson<I.MessageResponse>(R.CREATE_CHILD_LOCATION_ROUTE(locationName, parentLocationId), {})
 export const getLocationDetails = (locationId: number) => getJson<I.Location>(R.GET_LOCATION_DETAILS_ROUTE(locationId))
+
+// Time slots
+export const getAvailableTimeSlots = (locationId: number) =>
+  getJson<I.AvailableTimeSlotsResponse>(R.GET_AVAILABLE_TIME_SLOTS_ROUTE(locationId))

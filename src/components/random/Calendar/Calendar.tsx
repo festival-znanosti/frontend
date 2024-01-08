@@ -3,298 +3,214 @@ import { RefObject, useEffect, useState } from 'react'
 import Draggable, { DraggableEvent } from 'react-draggable'
 import { DraggableData } from 'react-draggable'
 
+import {
+  DATES_OF_FESTIVAL,
+  getDayFirstLetterCroatian,
+  getDayFirstThreeLettersCroatian,
+  getDayNumber,
+  getNextDay,
+  getPreviousDay,
+  returnOrdinalNumberOfDate,
+} from './dateFunctions'
+
+import { Button } from '@/components/ui/button'
 import useElementSize from '@/lib/useElementSize'
 import { useMediaQuery } from '@/lib/useMediaQuery'
+import { cn } from '@/lib/utils'
 
-interface ColumnWidthRefType extends RefObject<HTMLDivElement> {
-  current: HTMLDivElement | null
+interface CalendarRef extends RefObject<HTMLOListElement> {
+  current: HTMLOListElement | null
 }
 
-interface RowHeightRefType extends RefObject<HTMLDivElement> {
-  current: HTMLDivElement | null
-}
-
-type EventType = {
+type TimeSlotType = {
   id: number
-  title: string
-  gridRowStart: number
-  gridRowEnd: number
-  gridColumnStart: number
-  gridColumnEnd: number
   x: number
   y: number
-  startTime: number
+  currentColumn: number
+  currentRow: number
+  start: Date
 }
 
 export default function Calendar() {
-  const { width: columnWidth, elementRef: columnWidthRef } = useElementSize() as {
-    width: number
-    elementRef: ColumnWidthRefType
-  }
-
-  const { height: rowHeight, elementRef: rowHeightRef } = useElementSize() as {
-    height: number
-    elementRef: RowHeightRefType
-  }
   const isWeekCalendar = useMediaQuery('(min-width: 1024px)')
 
-  const [draggablePosition, setDraggablePosition] = useState({ x: 0, y: 0 })
-  useEffect(() => {
-    const handleResize = () => {
-      if (isWeekCalendar) {
-        const newX = Math.round(draggablePosition.x / columnWidth) * columnWidth
-        const newY = Math.round(draggablePosition.y / (rowHeight / 6)) * (rowHeight / 6)
-        setDraggablePosition({ x: newX, y: newY })
-      } else {
-        const newX = 0
-        const newY = Math.round(draggablePosition.y / (rowHeight / 6)) * (rowHeight / 6)
-        setDraggablePosition({ x: newX, y: newY })
-      }
-    }
+  const rowHeight = 56
+  const fiveMinHeight = rowHeight / 6
+  const rowOffsetHeight = 28
+  const rowOffsetPosition = 2
 
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [columnWidth, rowHeight, draggablePosition])
-
-  const handleDragStop2 = (_e: DraggableEvent, data: DraggableData) => {
-    // x and y coordinates
-    const nearestX = Math.round(data.x / columnWidth) * columnWidth
-    const nearestY = Math.round(data.y / (rowHeight / 6)) * (rowHeight / 6)
-    setDraggablePosition({ x: nearestX, y: nearestY })
-
-    // Calculate time and date from nearestX and nearestY
-    const baseDate = new Date(2024, 3, 22) // April 22, 2024 (month is 0-indexed)
-    const daysToAdd = nearestX / columnWidth
-    const minutesToAdd = (nearestY / (rowHeight / 6)) * 5
-
-    const newDate = new Date(baseDate)
-    newDate.setDate(baseDate.getDate() + daysToAdd)
-    newDate.setHours(10, minutesToAdd)
-
-    // Now newDate holds the calculated date and time
-    console.log(`Calculated Date and Time: ${newDate}`)
+  const { width: calendarWidth, elementRef: calendarRef } = useElementSize() as {
+    height: number
+    width: number
+    elementRef: CalendarRef
+  }
+  const roundNumber = (num: number) => {
+    return parseFloat(num.toFixed(3))
   }
 
-  /// ///////////////////
+  const calendarColumnWidth = isWeekCalendar ? roundNumber((calendarWidth - 32) / 7) : roundNumber(calendarWidth)
 
-  const [events, setEvents] = useState<EventType[]>([])
+  const [timeSlots, setTimeSlots] = useState<Array<TimeSlotType>>([])
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date(Date.UTC(2024, 3, 22)))
 
-  const addNewEvent = () => {
-    const newEvent: EventType = {
-      id: events.length + 1,
-      title: 'New Event',
-      gridRowStart: 2,
-      gridRowEnd: 12,
-      gridColumnStart: 1,
-      gridColumnEnd: 2,
-      x: 0,
-      y: 0,
-      startTime: new Date(2024, 3, 22).setHours(10),
-    }
-
-    setEvents([...events, newEvent])
-  }
-
-  const handleDragStop = (_e: DraggableEvent, data: DraggableData, eventID: number) => {
-    // Calculate nearest X and Y based on grid dimensions
-    const nearestX = Math.round(data.x / columnWidth) * columnWidth
-    const nearestY = Math.round(data.y / (rowHeight / 6)) * (rowHeight / 6)
-
-    // Update the position of the specific event
-    setEvents(
-      events.map((event) => {
-        if (event.id === eventID) {
-          // Calculate time and date from nearestX and nearestY
-          const baseDate = new Date(2024, 3, 22) // April 22, 2024 (month is 0-indexed)
-          const daysToAdd = nearestX / columnWidth
-          const minutesToAdd = (nearestY / (rowHeight / 6)) * 5
-
-          const newDate = new Date(baseDate)
-          newDate.setDate(baseDate.getDate() + daysToAdd)
-          newDate.setHours(10, minutesToAdd)
-
-          // Log the calculated date and time
-          console.log(`Dragged Event ID: ${eventID}, New Date and Time: ${newDate}`)
-
-          // Update the event's position and start time
-          return { ...event, x: nearestX, y: nearestY, startTime: newDate.getTime() }
-        }
-        return event
-      })
+  function calculateTime(currentRow: number, currentColumn: number): Date {
+    return new Date(
+      Date.UTC(2024, 3, 22 + currentColumn - 1, 10 + Math.floor((currentRow - 2) / 12), ((currentRow - 2) % 12) * 5, 0)
     )
   }
 
+  const handleDragStop = (_e: DraggableEvent, data: DraggableData, id: number) => {
+    const { x, y } = data
+
+    const newColumn = Math.round(roundNumber(x) / roundNumber(calendarColumnWidth)) + 1
+    const newRow = Math.round(roundNumber(y) / roundNumber(fiveMinHeight)) + rowOffsetPosition
+
+    setTimeSlots((prev) => {
+      return prev.map((timeSlot) => {
+        if (timeSlot.id === id) {
+          if (!isWeekCalendar) {
+            return {
+              ...timeSlot,
+              y: Math.round(roundNumber(y) / roundNumber(fiveMinHeight)) * roundNumber(fiveMinHeight),
+              currentRow: newRow,
+              start: calculateTime(newRow, timeSlot.currentColumn),
+            }
+          }
+
+          return {
+            ...timeSlot,
+            x,
+            y,
+            currentColumn: newColumn,
+            currentRow: newRow,
+            start: calculateTime(newRow, newColumn),
+          }
+        }
+
+        return timeSlot
+      })
+    })
+  }
+
   useEffect(() => {
     const handleResize = () => {
-      if (isWeekCalendar) {
-        events.map((event) => {
-          const newX = Math.round(event.x / columnWidth) * columnWidth
-          const newY = Math.round(event.y / (rowHeight / 6)) * (rowHeight / 6)
-          return setEvents((prevState) => {
-            return prevState.map((prevEvent) => {
-              if (prevEvent.id === event.id) {
-                return { ...prevEvent, x: newX, y: newY }
-              }
-              return prevEvent
-            })
-          })
+      setTimeSlots((prev) => {
+        return prev.map((timeSlot) => {
+          const newX = !isWeekCalendar ? 0 : (timeSlot.currentColumn - 1) * roundNumber(calendarColumnWidth)
+          return { ...timeSlot, x: newX }
         })
-      } else {
-        events.map((event) => {
-          const newX = 0
-          const newY = Math.round(event.y / (rowHeight / 6)) * (rowHeight / 6)
-          return setEvents((prevState) => {
-            return prevState.map((prevEvent) => {
-              if (prevEvent.id === event.id) {
-                return { ...prevEvent, x: newX, y: newY }
-              }
-              return prevEvent
-            })
-          })
-        })
-      }
+      })
     }
 
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
-  }, [columnWidth, rowHeight, isWeekCalendar])
+  }, [calendarWidth])
 
-  const totalSubRows = 120
-
-  // The height of each sub-row
-  const subRowHeight = rowHeight / 6
-
-  // Calculate the bottom bound for draggable elements
-  // 60 sub-rows times the height of each sub-row minus the 1px line height
-  const boundsBottom = totalSubRows * subRowHeight - 1
-
-  // Update the gridTemplateRows in the ol element
-  const gridTemplateRowsValue = `repeat(${totalSubRows}, ${subRowHeight}px)`
+  const addTimeSlot = () => {
+    setTimeSlots((prev) => [
+      ...prev,
+      {
+        id: timeSlots.length + 1,
+        x: 0,
+        y: 0,
+        currentColumn: 1,
+        currentRow: rowOffsetPosition,
+        start: new Date(Date.UTC(2024, 3, 22, 10, 0, 0)),
+      },
+    ])
+  }
 
   return (
     <div className="flex h-auto w-full flex-col">
       {/** Buttons above calendar */}
       <div className="flex flex-none items-center justify-end border-b border-gray-200 px-6 py-4">
-        <div className="relative flex items-center rounded-md bg-white shadow-sm">
-          <button
+        <div className="relative flex items-center rounded-md bg-white shadow-sm lg:hidden">
+          <Button
             type="button"
-            className="flex h-9 w-12 items-center justify-center rounded-l-md border-y border-l border-gray-300 pr-1 text-gray-400 hover:text-gray-500 focus:relative md:w-9 md:pr-0 md:hover:bg-gray-50"
+            className="w-16 rounded-r-none pl-2 pr-6"
+            onClick={() => {
+              const previousDay = getPreviousDay(selectedDate)
+              if (!previousDay) return
+              setSelectedDate(previousDay)
+            }}
           >
             <span className="sr-only">Dan prije</span>
-            <ChevronLeft className="h-5 w-5" aria-hidden="true" />
-          </button>
-          <button
+            <ChevronLeft aria-hidden="true" />
+          </Button>
+          <Button
             type="button"
-            className="block h-9  border-y border-gray-300 px-3.5 text-sm font-semibold text-gray-900 hover:bg-gray-50 focus:relative "
-          >
-            Danas
-          </button>
-          <button
-            type="button"
-            className="flex h-9 w-12 items-center justify-center rounded-r-md border-y border-r border-gray-300 pl-1 text-gray-400 hover:text-gray-500 focus:relative md:w-9 md:pl-0 md:hover:bg-gray-50"
+            className="w-16 rounded-l-none pl-6 pr-2"
+            onClick={() => {
+              const nextDay = getNextDay(selectedDate)
+              if (!nextDay) return
+              setSelectedDate(nextDay)
+            }}
           >
             <span className="sr-only">Dan poslije</span>
-            <ChevronRight className="h-5 w-5" aria-hidden="true" />
-          </button>
+            <ChevronRight aria-hidden="true" />
+          </Button>
         </div>
 
-        <button
-          type="button"
-          onClick={addNewEvent}
-          className="ml-4 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-        >
+        <Button type="button" onClick={addTimeSlot} className="ml-4">
           Dodaj termin
-        </button>
+        </Button>
       </div>
       <div className="isolate flex flex-auto flex-col overflow-auto bg-white">
-        <div className="flex  flex-none flex-col ">
+        <div className="flex  flex-none flex-col overflow-clip">
           <div className="sticky top-0 z-30 flex-none bg-white shadow ring-1 ring-black ring-opacity-5 ">
             {/* Calendar labels small screen */}
             <div className="grid grid-cols-7 text-sm leading-6 text-gray-500 lg:hidden">
-              <button type="button" className="flex flex-col items-center pb-3 pt-2">
-                P <span className="mt-1 flex h-8 w-8 items-center justify-center font-semibold text-gray-900">22</span>
-              </button>
-              <button type="button" className="flex flex-col items-center pb-3 pt-2">
-                U <span className="mt-1 flex h-8 w-8 items-center justify-center font-semibold text-gray-900">23</span>
-              </button>
-              <button type="button" className="flex flex-col items-center pb-3 pt-2">
-                S
-                <span className="mt-1 flex h-8 w-8 items-center justify-center rounded-full bg-indigo-600 font-semibold text-white">
-                  24
-                </span>
-              </button>
-              <button type="button" className="flex flex-col items-center pb-3 pt-2">
-                Č <span className="mt-1 flex h-8 w-8 items-center justify-center font-semibold text-gray-900">25</span>
-              </button>
-              <button type="button" className="flex flex-col items-center pb-3 pt-2">
-                P <span className="mt-1 flex h-8 w-8 items-center justify-center font-semibold text-gray-900">26</span>
-              </button>
-              <button type="button" className="flex flex-col items-center pb-3 pt-2">
-                S <span className="mt-1 flex h-8 w-8 items-center justify-center font-semibold text-gray-900">27</span>
-              </button>
-              <button type="button" className="flex flex-col items-center pb-3 pt-2">
-                N <span className="mt-1 flex h-8 w-8 items-center justify-center font-semibold text-gray-900">28</span>
-              </button>
+              {DATES_OF_FESTIVAL.map((date) => {
+                return (
+                  <div className="flex flex-col items-center pb-2 pt-3" key={date.getDay()}>
+                    {getDayFirstLetterCroatian(date)}
+                    <span
+                      className={cn(
+                        'mt-1 flex h-8 w-8 items-center justify-center font-semibold text-gray-900',
+                        selectedDate.getTime() === date.getTime() && 'rounded-full bg-red-600 text-white'
+                      )}
+                    >
+                      {getDayNumber(date)}
+                    </span>
+                  </div>
+                )
+              })}
             </div>
 
             {/* Calendar labels large screen */}
             <div className="-mr-px hidden grid-cols-7 divide-x divide-gray-100 border border-r border-gray-100 text-sm leading-6 text-gray-500 lg:grid">
-              <div className="col-end-1 w-14" />
-              <div className="flex items-center justify-center py-3">
-                <span>
-                  Pon <span className="items-center justify-center font-semibold text-gray-900">22</span>
-                </span>
-              </div>
-              <div className="flex items-center justify-center py-3">
-                <span className="flex items-baseline">
-                  Uto
-                  <span className="ml-1.5 flex h-8 w-8 items-center justify-center rounded-full bg-indigo-600 font-semibold text-white">
-                    23
-                  </span>
-                </span>
-              </div>
-              <div className="flex items-center justify-center py-3">
-                <span className="flex items-baseline">
-                  Sri
-                  <span className="ml-1.5 flex h-8 w-8 items-center justify-center rounded-full bg-indigo-600 font-semibold text-white">
-                    24
-                  </span>
-                </span>
-              </div>
-              <div className="flex items-center justify-center py-3">
-                <span>
-                  Čet <span className="items-center justify-center font-semibold text-gray-900">25</span>
-                </span>
-              </div>
-              <div className="flex items-center justify-center py-3">
-                <span>
-                  Pet <span className="items-center justify-center font-semibold text-gray-900">26</span>
-                </span>
-              </div>
-              <div className="flex items-center justify-center py-3">
-                <span>
-                  Sub <span className="items-center justify-center font-semibold text-gray-900">27</span>
-                </span>
-              </div>
-              <div className="flex items-center justify-center py-3">
-                <span>
-                  Ned <span className="items-center justify-center font-semibold text-gray-900">28</span>
-                </span>
-              </div>
+              <div className="col-end-1 w-[55px]" />
+              {DATES_OF_FESTIVAL.map((date) => {
+                return (
+                  <div className="flex items-center justify-center py-3" key={date.getDate()}>
+                    <span className="flex items-baseline">
+                      {getDayFirstThreeLettersCroatian(date)}
+                      <span
+                        className={cn(
+                          'ml-1.5 flex h-8 w-8 items-center justify-center rounded-full  font-semibold text-black'
+                        )}
+                      >
+                        {getDayNumber(date)}
+                      </span>
+                    </span>
+                  </div>
+                )
+              })}
+
               <div className="col-start-8 w-8" />
             </div>
           </div>
 
           <div className="flex flex-auto">
             <div className="sticky left-0 z-10 w-14 flex-none bg-white ring-1 ring-gray-100" />
-            <div className=" grid flex-auto grid-cols-1 grid-rows-1">
+            <div className="grid flex-auto grid-cols-1 grid-rows-1">
               {/* Horizontal lines */}
               <div
                 className="col-start-1 col-end-2 row-start-1 grid divide-y divide-gray-100"
-                style={{ gridTemplateRows: 'repeat(20, minmax(3.5rem, 1fr))' }}
+                style={{ gridTemplateRows: `repeat(20, minmax(${rowHeight}px, 1fr))` }}
               >
                 <div className="row-end-1 h-7" />
-                <div ref={rowHeightRef}>
+                <div>
                   <div className="sticky left-0 z-20 -ml-14 -mt-2.5 w-14 pr-2 text-right text-xs leading-5 text-gray-400">
                     10:00
                   </div>
@@ -354,16 +270,11 @@ export default function Calendar() {
                   </div>
                 </div>
                 <div />
-                <div>
-                  <div className="sticky left-0 z-20 -ml-14 -mt-2.5 w-14 pr-2 text-right text-xs leading-5 text-gray-400">
-                    20:00
-                  </div>
-                </div>
               </div>
 
               {/* Vertical lines */}
-              <div className="col-start-1 col-end-2 row-start-1 hidden grid-cols-1 grid-rows-1 divide-x divide-gray-100 lg:grid lg:grid-cols-7">
-                <div className="col-start-1 row-span-full" ref={columnWidthRef} />
+              <div className="col-start-1 col-end-2 row-start-1 hidden grid-cols-7 grid-rows-1 divide-x divide-gray-100 lg:grid lg:grid-cols-7">
+                <div className="col-start-1 row-span-full" />
                 <div className="col-start-2 row-span-full" />
                 <div className="col-start-3 row-span-full" />
                 <div className="col-start-4 row-span-full" />
@@ -375,54 +286,42 @@ export default function Calendar() {
 
               {/* Events */}
               <ol
-                className="col-start-1 col-end-2 row-start-1 row-end-2 grid h-full w-full grid-cols-1 lg:grid-cols-7 "
-                style={{ gridTemplateRows: '1.75rem repeat(120, minmax(0, 1fr)) auto' }}
+                className="col-start-1 col-end-2 row-start-1 grid grid-cols-1 lg:grid-cols-7 lg:pr-8"
+                style={{ gridTemplateRows: `${rowOffsetHeight}px repeat(120, minmax(0, 1fr)) auto` }}
+                ref={calendarRef}
               >
-                <Draggable
-                  axis={isWeekCalendar ? 'both' : 'y'}
-                  grid={isWeekCalendar ? [columnWidth, subRowHeight] : undefined}
-                  position={draggablePosition}
-                  onStop={handleDragStop2}
-                  bounds={{
-                    left: 0,
-                    right: 6 * columnWidth,
-                    top: 0,
-                    bottom: 18 * (subRowHeight * 6 + 1), // + 1 because of border
-                  }}
-                >
-                  <li className="relative flex " style={{ gridRow: '2 / span 12' }}>
-                    <div className="group absolute inset-1 flex flex-col overflow-y-auto rounded-lg bg-red-200 p-2 text-xs leading-5 hover:bg-blue-100">
-                      <p className="order-1 font-semibold text-blue-700">TMNT prva forma</p>
-                      <p className="text-blue-500 group-hover:text-blue-700">6:00 AM</p>
-                    </div>
-                  </li>
-                </Draggable>
-                {events.map((event) => (
-                  <Draggable
-                    key={event.id}
-                    axis={isWeekCalendar ? 'both' : 'y'}
-                    grid={isWeekCalendar ? [columnWidth, rowHeight / 6] : undefined}
-                    position={{ x: event.x, y: event.y }}
-                    onStop={(e, data) => handleDragStop(e, data, event.id)}
-                    bounds={{
-                      left: 0,
-                      right: 6 * columnWidth,
-                      top: 0,
-                      bottom: 18 * (rowHeight + 1), // + 1 because of border
-                    }}
-                  >
-                    <li
-                      style={{
-                        gridRow: `${event.gridRowStart} / span ${event.gridRowEnd}`,
-                        maxWidth: `${columnWidth}`,
+                {timeSlots.map((timeSlot) => {
+                  return (
+                    <Draggable
+                      key={timeSlot.id}
+                      axis={isWeekCalendar ? 'both' : 'y'}
+                      grid={isWeekCalendar ? [roundNumber(calendarColumnWidth), roundNumber(fiveMinHeight)] : undefined}
+                      position={{ x: timeSlot.x, y: timeSlot.y }}
+                      onStop={(e, data) => handleDragStop(e, data, timeSlot.id)}
+                      bounds={{
+                        left: 0,
+                        right: 5 * roundNumber(calendarColumnWidth),
+                        top: 0,
+                        bottom: 18 * rowHeight,
                       }}
-                      className="group inset-4 flex flex-col  rounded-lg bg-blue-50 p-2 text-xs leading-5 hover:bg-blue-100"
                     >
-                      <p className="order-1 font-semibold text-blue-700">{event.title}</p>
-                      <p className="text-blue-500">{new Date(event.startTime).toDateString()}</p>
-                    </li>
-                  </Draggable>
-                ))}
+                      <li
+                        className={cn(
+                          'relative z-10 col-start-1 mt-px flex active:z-20',
+                          timeSlot.currentColumn !== returnOrdinalNumberOfDate(selectedDate) && 'hidden lg:flex'
+                        )}
+                        style={{ gridRow: '2 / span 12' }}
+                      >
+                        <div className="group absolute inset-1 flex flex-col overflow-y-auto rounded-lg bg-blue-50 p-2 text-xs leading-5 hover:bg-blue-100">
+                          <p className="order-1 font-semibold text-blue-700">Breakfast</p>
+                          <p className="text-blue-500 group-hover:text-blue-700">
+                            <time dateTime="2022-01-12T06:00">{timeSlot.start.toUTCString()}</time>
+                          </p>
+                        </div>
+                      </li>
+                    </Draggable>
+                  )
+                })}
               </ol>
             </div>
           </div>

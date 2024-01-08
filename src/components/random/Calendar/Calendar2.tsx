@@ -1,5 +1,5 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { RefObject, useState } from 'react'
+import { RefObject, useEffect, useState } from 'react'
 import Draggable, { DraggableEvent } from 'react-draggable'
 import { DraggableData } from 'react-draggable'
 
@@ -47,27 +47,24 @@ export default function Calendar() {
   const handleDragStop = (_e: DraggableEvent, data: DraggableData) => {
     const { x, y } = data
 
-    const currentColumn = Math.floor(roundNumber(x) / roundNumber(calendarColumnWidth)) + 1
+    const currentColumn = Math.round(roundNumber(x) / roundNumber(calendarColumnWidth)) + 1
     const currentRow = Math.floor(roundNumber(y) / roundNumber(fiveMinHeight)) + rowOffsetPosition
 
     const startTime = calculateTime(currentRow, currentColumn)
     setPosition({ x, y, currentColumn, currentRow, startTime })
   }
 
-  // useEffect(() => {
-  //   const handleResize = () => {
-  //     if (isWeekCalendar) {
-  //       const newX = position.currentColumn * roundNumber(calendarColumnWidth)
-  //       setPosition({ ...position, x: newX })
-  //     } else {
-  //       const newX = 0
-  //       setPosition({ ...position, x: newX })
-  //     }
-  //   }
+  useEffect(() => {
+    const handleResize = () => {
+      const newX = !isWeekCalendar ? 0 : (position.currentColumn - 1) * roundNumber(calendarColumnWidth)
+      setPosition((positionBefore) => {
+        return { ...positionBefore, x: newX }
+      })
+    }
 
-  //   window.addEventListener('resize', handleResize)
-  //   return () => window.removeEventListener('resize', handleResize)
-  // }, [calendarWidth])
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [calendarWidth])
 
   return (
     <div className="flex h-auto w-full flex-col">
@@ -285,7 +282,7 @@ export default function Calendar() {
                   }}
                 >
                   <li
-                    className={cn('relative z-10 col-start-1 mt-px flex active:z-20 lg:col-start-1')}
+                    className={cn('relative z-10 col-start-1 mt-px flex active:z-20')}
                     style={{ gridRow: '2 / span 12' }}
                   >
                     <div className="group absolute inset-1 flex flex-col overflow-y-auto rounded-lg bg-blue-50 p-2 text-xs leading-5 hover:bg-blue-100">

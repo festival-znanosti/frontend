@@ -14,6 +14,7 @@ import {
   getNextDay,
   getPreviousDay,
   getRowSpanDependingOnLocationId,
+  getStepHeightFromLocationId,
   returnOrdinalNumberOfDate,
   returnStartRowIndexOfDate,
   rowHeight,
@@ -77,7 +78,9 @@ export default function Calendar({ locationId }: { locationId: number }) {
           if (!isWeekCalendar) {
             return {
               ...timeSlot,
-              y: Math.round(roundNumber(y) / roundNumber(fiveMinHeight)) * roundNumber(fiveMinHeight),
+              y:
+                Math.round(roundNumber(y) / getStepHeightFromLocationId(roundNumber(fiveMinHeight), locationId)) *
+                getStepHeightFromLocationId(roundNumber(fiveMinHeight), locationId),
               currentRow: newRow,
               start: calculateTime(newRow, timeSlot.currentColumn),
               end: getEndTime(calculateTime(newRow, timeSlot.currentColumn), locationId),
@@ -318,12 +321,10 @@ export default function Calendar({ locationId }: { locationId: number }) {
                       >
                         <div
                           className={cn(
-                            'group absolute inset-1 flex items-center justify-center overflow-y-auto rounded-lg bg-green-100 p-2 text-xs leading-5 hover:bg-blue-100',
-                            availableTimeSlots?.find((t) => t.id === timeSlot.id - 1) && 'rounded-t-none',
-                            availableTimeSlots?.find((t) => t.id === timeSlot.id + 1) && 'rounded-b-none'
+                            'group absolute inset-1 flex items-center justify-center overflow-y-auto rounded-lg bg-green-100 p-2 text-xs leading-5 '
                           )}
                         >
-                          <p className="order-1 text-green-800">Slobodno</p>
+                          {/* <p className="order-1 text-green-800">Slobodno</p> */}
                         </div>
                       </li>
                     )
@@ -334,7 +335,14 @@ export default function Calendar({ locationId }: { locationId: number }) {
                     <Draggable
                       key={timeSlot.id}
                       axis={isWeekCalendar ? 'both' : 'y'}
-                      grid={isWeekCalendar ? [roundNumber(calendarColumnWidth), roundNumber(fiveMinHeight)] : undefined}
+                      grid={
+                        isWeekCalendar
+                          ? [
+                              roundNumber(calendarColumnWidth),
+                              getStepHeightFromLocationId(roundNumber(fiveMinHeight), locationId),
+                            ]
+                          : undefined
+                      }
                       position={{ x: timeSlot.x, y: timeSlot.y }}
                       onStop={(e, data) => handleDragStop(e, data, timeSlot.id)}
                       bounds={{
@@ -351,7 +359,13 @@ export default function Calendar({ locationId }: { locationId: number }) {
                         )}
                         style={{ gridRow: `2 / span ${timeSlot.rowSpan}` }}
                       >
-                        <div className="group absolute inset-1 flex flex-col overflow-y-auto rounded-lg bg-blue-50 p-2 text-xs leading-5 hover:bg-blue-100">
+                        <div
+                          className={cn(
+                            'group absolute inset-1 flex flex-col overflow-y-auto rounded-lg bg-blue-50 p-2 text-xs leading-5 hover:bg-blue-100',
+                            locationId === 2 && 'pb-0 pt-1',
+                            locationId === 4 && 'pb-0 pt-1'
+                          )}
+                        >
                           <p className="order-1 font-semibold text-blue-700">{'Termin ' + timeSlot.id}</p>
                           <p className="text-blue-500 group-hover:text-blue-700">
                             <time dateTime={timeSlot.start.toISOString()}>

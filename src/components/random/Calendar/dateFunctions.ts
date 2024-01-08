@@ -104,3 +104,15 @@ export const getEndTime = (date: Date, locationId: number) => {
 
   return new Date(date.setHours(hours + 1))
 }
+
+export const getStepHeightFromLocationId = (px: number, locationId: number) => {
+  if (locationId === 2 || locationId === 4) {
+    return px * 6
+  }
+
+  if (locationId === 3) {
+    return px * 9
+  }
+
+  return px * 12
+}

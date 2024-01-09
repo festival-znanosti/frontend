@@ -35,3 +35,5 @@ export const GET_AVAILABLE_TIME_SLOTS_ROUTE = (locationId: number) =>
 const EVENT_BASE_URL = `${BASE_URL}/Events` as const
 
 export const CREATE_EVENT_ROUTE = () => `${EVENT_BASE_URL}/Create` as const
+export const GET_MY_EVENTS_ROUTE = (submitterId: number) =>
+  `${EVENT_BASE_URL}/GetSubmittersEvents?submitterId=${submitterId}` as const

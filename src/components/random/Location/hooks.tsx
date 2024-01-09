@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 
-import { getAllChildLocations, getLocationDetails } from '@/api/repository'
+import { getAllChildLocations, getLocationDetails, getMyEvents } from '@/api/repository'
 import { getAllParentLocations } from '@/api/repository'
 
 export const useParentLocations = () => {
@@ -47,5 +47,21 @@ export const useLocationDetails = (locationId: number) => {
     isPendingLocation: isPending,
     locationDetails: data,
     refetchLocationDetails: refetch,
+  }
+}
+
+export const useMyEvents = (submitterId: number) => {
+  const { isPending, data, refetch } = useQuery({
+    queryKey: ['myEvents', submitterId],
+    queryFn: () => getMyEvents(submitterId),
+    enabled: !!submitterId,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  })
+
+  return {
+    isPendingMyEvents: isPending,
+    myEvents: data,
+    refetchMyEvents: refetch,
   }
 }

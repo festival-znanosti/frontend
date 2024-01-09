@@ -44,3 +44,36 @@ export type TimeSlot = {
 }
 
 export type AvailableTimeSlotsResponse = Array<TimeSlot>
+
+export type Lecturer = {
+  id: number
+  firstName: string
+  lastName: string
+  email: string
+  phone: string
+  type: 0 | 1
+  resume: string
+}
+
+export type ParticipantAge = {
+  id: number
+  age: string
+  label: string
+}
+
+export type Event = {
+  id: number
+  title: string
+  status: number
+  type: number
+  visitorsCount: number
+  equipment: string
+  summary: string
+  submitterEmail: string
+  locaction: Location
+  lecturers: Array<Lecturer>
+  participantsAges: Array<ParticipantAge>
+  timeSlots: Array<TimeSlot>
+}
+
+export type MyEventsResponse = Array<Event>

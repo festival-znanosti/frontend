@@ -70,7 +70,7 @@ export type Event = {
   equipment: string
   summary: string
   submitterEmail: string
-  locaction: Location
+  location: Location
   lecturers: Array<Lecturer>
   participantsAges: Array<ParticipantAge>
   timeSlots: Array<TimeSlot>

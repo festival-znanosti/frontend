@@ -29,3 +29,4 @@ export const getAvailableTimeSlots = (locationId: number) =>
 // Events
 export const createEvent = (body: EventFormSchemaType) => postJson<I.MessageResponse>(R.CREATE_EVENT_ROUTE(), body)
 export const getMyEvents = (submitterId: number) => getJson<I.MyEventsResponse>(R.GET_MY_EVENTS_ROUTE(submitterId))
+export const getEvent = (eventId: number) => getJson<I.Event>(R.GET_EVENT_ROUTE(eventId))
